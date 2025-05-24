@@ -221,60 +221,80 @@
 
         <!-- Functions: The Building Blocks -->
         <div class="slide" id="slide-6">
-            <h2>Functions: The Art of Doing One Thing Well</h2>
-            
-            <h3>The 20-Line Rule (And Why It Matters)</h3>
-            <p style="margin-bottom: 25px;">Functions should be small enough to fit on your screen without scrolling. This isn't arbitrary—it's cognitive load management.</p>
-
-            <div class="good-bad-container">
-                <div class="bad-example">
-                    <h4>❌ The "God Function"</h4>
-                    <div class="code-block" data-lang="Python">
-def process_order(order_data):
-    # Validate data (15 lines)
-    if not order_data.get('customer_id'):
-        raise ValueError("Missing customer")
-    # ... more validation
-    
-    # Calculate pricing (20 lines)
-    base_price = order_data['items'] * 10
-    # ... complex pricing logic
-    
-    # Apply discounts (15 lines)
-    if order_data.get('coupon'):
-        # ... discount calculation
-    
-    # Save to database (10 lines)
-    # ... database operations
-    
-    # Send notifications (12 lines)
-    # ... email/SMS logic
-    
-    return order_id</div>
-                </div>
-                
-                <div class="good-example">
-                    <h4>✅ Composed Functions</h4>
-                    <div class="code-block" data-lang="Python">
-def process_order(order_data):
-    validated_order = validate_order_data(order_data)
-    priced_order = calculate_order_pricing(validated_order)
-    discounted_order = apply_discounts(priced_order)
-    
-    order_id = save_order_to_database(discounted_order)
-    send_order_confirmations(order_id, discounted_order)
-    
-    return order_id
-
-# Each function above is 3-8 lines and has one clear purpose</div>
-                </div>
-            </div>
-
-            <div class="key-takeaway">
-                When you can't easily name a function without using "and", "or", or "then", 
-                it's probably doing too much and should be split.
-            </div>
-        </div>
+          <h2>Functions: The Art of Doing One Thing Well</h2>
+      
+          <h3>The 20-Line Rule (And Why It Matters)</h3>
+          <p style="margin-bottom: 25px;">
+              Functions should be small enough to fit on your screen without scrolling.
+              This isn't arbitrary—it's cognitive load management.
+          </p>
+      
+          <div class="good-bad-container" style="margin-left: -140px;">
+              <div class="bad-example">
+                  <h4>❌ The "God Function"</h4>
+                  <div class="code-block" data-lang="C++">
+      <pre><code class="language-cpp">
+      void processOrder(const OrderData& order) {
+          // Validate data
+          if (order.customerId.empty()) {
+              throw std::invalid_argument("Missing customer");
+          }
+          // ... more validation logic
+      
+          // Calculate pricing
+          double total = 0;
+          for (const auto& item : order.items) {
+              total += item.price * item.quantity;
+          }
+          // ... complex pricing logic
+      
+          // Apply discounts
+          if (order.hasCoupon) {
+              total *= 0.9; // 10% discount
+          }
+      
+          // Save to database
+          Database db;
+          int orderId = db.save(order, total);
+      
+          // Send notifications
+          EmailService email;
+          email.sendConfirmation(order.customerId, orderId);
+      
+          // Return order ID
+          return orderId;
+      }
+      </code></pre>
+                  </div>
+              </div>
+      
+              <div class="good-example">
+                  <h4>✅ Composed Functions</h4>
+                  <div class="code-block" data-lang="C++">
+      <pre><code class="language-cpp">
+      int processOrder(const OrderData& order) {
+          validateOrder(order);
+          double total = calculateTotal(order);
+          total = applyDiscount(order, total);
+          
+          int orderId = saveOrder(order, total);
+          notifyCustomer(order.customerId, orderId);
+          
+          return orderId;
+      }
+      
+      // Each helper function is small, testable, and focused
+      </code></pre>
+                  </div>
+              </div>
+          </div>
+      
+          <div class="key-takeaway">
+              When you can't easily name a function without using "and", "or", or "then", 
+              it's probably doing too much and should be split.
+          </div>
+      </div>
+      
 
         <!-- Error Handling Excellence -->
         <div class="slide" id="slide-7">
@@ -674,26 +694,101 @@ def process_order(order_data):
 
         <!-- Real-World Refactoring Example -->
         <div class="slide" id="slide-14">
-            <h2>Real-World Refactoring: C# Example</h2>
-            
-            <h3>Before: Monolithic Service Class</h3>
-            <div class="code-block" data-lang="C#">
-public class UserService
-{
-    public async Task<bool> ProcessUserRegistration(
-        string email, string password, string firstName, string lastName)
-    {
-        // Validation mixed with business logic
-        if (string.IsNullOrEmpty(email) || !email.Contains("@"))
-            return false;
-        if (password.Length < 8)
-            return false;
-            
-        // Direct database access
-        using var connection = new SqlConnection(connectionString);
-        var existingUser = await
-        </div>
-        </div>
+          <h2>Real-World Refactoring: C# Example</h2>
+      
+          <h3>Before: Monolithic Service Class</h3>
+          <div class="code-block" data-lang="C#">
+      <pre><code class="language-csharp">
+      public class UserService
+      {
+          public async Task&lt;bool&gt; ProcessUserRegistration(
+              string email, string password, string firstName, string lastName)
+          {
+              // Validation mixed with business logic
+              if (string.IsNullOrEmpty(email) || !email.Contains("@"))
+                  return false;
+              if (password.Length &lt; 8)
+                  return false;
+      
+              // Direct database access
+              using var connection = new SqlConnection(connectionString);
+              var existingUser = await connection
+                  .QueryFirstOrDefaultAsync&lt;User&gt;("SELECT * FROM Users WHERE Email = @Email", new { email });
+      
+              if (existingUser != null)
+                  return false;
+      
+              var hashedPassword = HashPassword(password);
+              var user = new User
+              {
+                  Email = email,
+                  PasswordHash = hashedPassword,
+                  FirstName = firstName,
+                  LastName = lastName
+              };
+      
+              await connection.ExecuteAsync(
+                  "INSERT INTO Users (Email, PasswordHash, FirstName, LastName) VALUES (@Email, @PasswordHash, @FirstName, @LastName)",
+                  user);
+      
+              return true;
+          }
+      
+          private string HashPassword(string password)
+          {
+              // Basic hashing (not secure in real-world apps)
+              return Convert.ToBase64String(Encoding.UTF8.GetBytes(password));
+          }
+      }
+      </code></pre>
+          </div>
+      
+          <h3>After: Decoupled, Testable Design</h3>
+          <div class="code-block" data-lang="C#">
+      <pre><code class="language-csharp">
+      // Separation of concerns with services and validation
+      public class UserRegistrationService
+      {
+          private readonly IUserRepository _userRepository;
+          private readonly IPasswordHasher _passwordHasher;
+          private readonly IValidator&lt;RegisterUserRequest&gt; _validator;
+      
+          public UserRegistrationService(
+              IUserRepository userRepository,
+              IPasswordHasher passwordHasher,
+              IValidator&lt;RegisterUserRequest&gt; validator)
+          {
+              _userRepository = userRepository;
+              _passwordHasher = passwordHasher;
+              _validator = validator;
+          }
+      
+          public async Task&lt;Result&gt; RegisterUserAsync(RegisterUserRequest request)
+          {
+              var validationResult = _validator.Validate(request);
+              if (!validationResult.IsValid)
+                  return Result.Failure("Invalid input");
+      
+              if (await _userRepository.ExistsByEmailAsync(request.Email))
+                  return Result.Failure("Email already in use");
+      
+              var hashedPassword = _passwordHasher.Hash(request.Password);
+      
+              var user = new User(
+                  request.Email,
+                  hashedPassword,
+                  request.FirstName,
+                  request.LastName);
+      
+              await _userRepository.AddAsync(user);
+      
+              return Result.Success();
+          }
+      }
+      </code></pre>
+          </div>
+      </div>
+      
 
         <!-- Team Practices -->
         <div class="slide" id="slide-15">
@@ -746,56 +841,62 @@ public class UserService
 
         <!-- Performance & Clean Code -->
         <div class="slide" id="slide-16">
-            <h2>Clean Code ≠ Slow Code</h2>
-            
-            <h3>The Performance Paradox</h3>
-            <p style="font-size: 1.2em; line-height: 1.8; margin-bottom: 30px;">
-                Clean code often performs better because it's easier to profile, optimize, and reason about. 
-                Premature optimization, however, is the root of all evil.
-            </p>
-
-            <div class="good-bad-container">
-                <div class="bad-example">
-                    <h4>❌ Premature Optimization</h4>
-                    <div class="code-block" data-lang="JavaScript">
-// Unreadable "optimization"
-function calculateScore(users) {
-    let result = 0;
-    for (let i = 0, len = users.length; i < len; ++i) {
-        const u = users[i];
-        result += u.points * (u.level > 5 ? 1.5 : 1) + 
-                 (u.premium ? 10 : 0);
-    }
-    return result;
-}</div>
-                </div>
-                
-                <div class="good-example">
-                    <h4>✅ Clear, Then Optimize If Needed</h4>
-                    <div class="code-block" data-lang="JavaScript">
-function calculateTotalScore(users) {
-    return users.reduce((totalScore, user) => {
-        const baseScore = user.points;
-        const levelBonus = user.isExperienced() ? baseScore * 0.5 : 0;
-        const premiumBonus = user.isPremium() ? 10 : 0;
+          <h2>Clean Code ≠ Slow Code</h2>
         
-        return totalScore + baseScore + levelBonus + premiumBonus;
-    }, 0);
-}
-
-// If profiling shows this is a bottleneck, THEN optimize
-// But now you have a clear baseline to measure against</div>
-                </div>
+          <h3>The Performance Paradox</h3>
+          <p style="font-size: 1.2em; line-height: 1.8; margin-bottom: 30px;">
+            Clean code often performs better because it's easier to profile, optimize, and reason about.
+            Premature optimization, however, is the root of all evil.
+          </p>
+        
+          <div class="good-bad-container" style="margin-left: -150px;">
+            <div class="bad-example">
+              <h4>❌ Premature Optimization</h4>
+              <div class="code-block" data-lang="JavaScript">
+        <pre><code class="language-javascript">
+        // Unreadable "optimization"
+        function calculateScore(users) {
+          let result = 0;
+          for (let i = 0, len = users.length; i < len; ++i) {
+            const u = users[i];
+            result += u.points * (u.level > 5 ? 1.5 : 1) + 
+                      (u.premium ? 10 : 0);
+          }
+          return result;
+        }
+        </code></pre>
+              </div>
             </div>
-
-            <h3>Smart Performance Strategies</h3>
-            <ul style="font-size: 1.1em; line-height: 1.8;">
-                <li><strong>Measure First:</strong> Use profilers to identify actual bottlenecks, not assumed ones</li>
-                <li><strong>Optimize Algorithms:</strong> O(n²) to O(n log n) changes beat micro-optimizations</li>
-                <li><strong>Cache Expensive Operations:</strong> But keep caching logic separate from business logic</li>
-                <li><strong>Database Query Optimization:</strong> Often more impactful than code-level optimizations</li>
-            </ul>
+        
+            <div class="good-example">
+              <h4>✅ Clear, Then Optimize If Needed</h4>
+              <div class="code-block" data-lang="JavaScript">
+        <pre><code class="language-javascript">
+        function calculateTotalScore(users) {
+          return users.reduce((total, user) => {
+            const base = user.points;
+            const levelBonus = user.isExperienced() ? base * 0.5 : 0;
+            const premiumBonus = user.isPremium() ? 10 : 0;
+            return total + base + levelBonus + premiumBonus;
+          }, 0);
+        }
+        
+        // If profiling shows this is a bottleneck, THEN optimize.
+        // But now you have a clear baseline to measure against.
+        </code></pre>
+              </div>
+            </div>
+          </div>
+        
+          <h3>Smart Performance Strategies</h3>
+          <ul style="font-size: 1.1em; line-height: 1.8;">
+            <li><strong>Measure First:</strong> Use profilers to identify actual bottlenecks, not assumed ones</li>
+            <li><strong>Optimize Algorithms:</strong> O(n²) to O(n log n) changes beat micro-optimizations</li>
+            <li><strong>Cache Expensive Operations:</strong> But keep caching logic separate from business logic</li>
+            <li><strong>Database Query Optimization:</strong> Often more impactful than code-level optimizations</li>
+          </ul>
         </div>
+        
 
         <!-- Legacy Code Strategies -->
         <div class="slide" id="slide-17">
@@ -1011,41 +1112,60 @@ logger.warn('User login failed', {
             </div>
 
             <div class="code-block" data-lang="TypeScript">
-// Secure by Design
-class UserService {
-    private readonly passwordHasher: PasswordHasher;
-    private readonly auditLogger: AuditLogger;
-    
-    async authenticateUser(credentials: LoginCredentials): Promise<Result<User, AuthError>> {
-        // Input validation at boundary
-        const validationResult = this.validateCredentials(credentials);
-        if (validationResult.isFailure()) {
-            this.auditLogger.logFailedLogin(credentials.username, 'Invalid format');
-            return new Failure(new InvalidCredentialsError());
-        }
-        
-        const user = await this.userRepository.findByUsername(credentials.username);
-        if (!user) {
-            // Constant-time response to prevent username enumeration
-            await this.passwordHasher.hash('dummy-password');
-            this.auditLogger.logFailedLogin(credentials.username, 'User not found');
-            return new Failure(new InvalidCredentialsError());
-        }
-        
-        const isValidPassword = await this.passwordHasher.verify(
-            credentials.password, 
-            user.hashedPassword
-        );
-        
-        if (!isValidPassword) {
-            this.auditLogger.logFailedLogin(credentials.username, 'Invalid password');
-            return new Failure(new InvalidCredentialsError());
-        }
-        
-        this.auditLogger.logSuccessfulLogin(user.id);
-        return new Success(user);
-    }
-}</div>
+              <pre><code class="language-typescript">
+              // Secure by Design
+              class UserService {
+                  private readonly passwordHasher: PasswordHasher;
+                  private readonly auditLogger: AuditLogger;
+                  private readonly userRepository: UserRepository;
+              
+                  constructor(
+                      passwordHasher: PasswordHasher,
+                      auditLogger: AuditLogger,
+                      userRepository: UserRepository
+                  ) {
+                      this.passwordHasher = passwordHasher;
+                      this.auditLogger = auditLogger;
+                      this.userRepository = userRepository;
+                  }
+              
+                  async authenticateUser(credentials: LoginCredentials): Promise&lt;Result&lt;User, AuthError&gt;&gt; {
+                      // Input validation at boundary
+                      const validationResult = this.validateCredentials(credentials);
+                      if (validationResult.isFailure()) {
+                          this.auditLogger.logFailedLogin(credentials.username, 'Invalid format');
+                          return new Failure(new InvalidCredentialsError());
+                      }
+              
+                      const user = await this.userRepository.findByUsername(credentials.username);
+                      if (!user) {
+                          // Constant-time response to prevent username enumeration
+                          await this.passwordHasher.hash('dummy-password');
+                          this.auditLogger.logFailedLogin(credentials.username, 'User not found');
+                          return new Failure(new InvalidCredentialsError());
+                      }
+              
+                      const isValidPassword = await this.passwordHasher.verify(
+                          credentials.password,
+                          user.hashedPassword
+                      );
+              
+                      if (!isValidPassword) {
+                          this.auditLogger.logFailedLogin(credentials.username, 'Invalid password');
+                          return new Failure(new InvalidCredentialsError());
+                      }
+              
+                      this.auditLogger.logSuccessfulLogin(user.id);
+                      return new Success(user);
+                  }
+              
+                  private validateCredentials(credentials: LoginCredentials): Result&lt;void, ValidationError&gt; {
+                      // Validation logic here
+                  }
+              }
+              </code></pre>
+              </div>
+              
         </div>
 
         <!-- Documentation & Clean Code -->
