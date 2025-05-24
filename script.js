@@ -1,15 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
     const slides = document.querySelectorAll('.slide');
-    const navDots = document.querySelectorAll('.nav-dot');
+    let navDots = document.querySelectorAll('.nav-dot');
+
+    const navigation = document.querySelector('.navigation') || createNavigation();
 
     if (navDots.length === 0) {
-        const navigation = document.querySelector('.navigation') || createNavigation();
         slides.forEach((slide, index) => {
             const dot = document.createElement('div');
             dot.className = 'nav-dot';
             dot.dataset.slide = index;
             navigation.appendChild(dot);
         });
+        navDots = document.querySelectorAll('.nav-dot');
     }
 
     function createNavigation() {
@@ -21,17 +23,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateNavigation() {
         const scrollPos = window.scrollY + window.innerHeight / 2;
+        let activeIndex = -1;
 
         slides.forEach((slide, index) => {
             const slideTop = slide.offsetTop;
             const slideBottom = slideTop + slide.offsetHeight;
-            const dot = document.querySelector(`[data-slide="${index}"]`);
 
             if (scrollPos >= slideTop && scrollPos <= slideBottom) {
-                document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
-                if (dot) dot.classList.add('active');
+                activeIndex = index;
             }
         });
+
+        navDots.forEach(dot => dot.classList.remove('active'));
+        if (activeIndex !== -1) {
+            navDots[activeIndex].classList.add('active');
+        }
     }
 
     document.addEventListener('click', function (e) {
@@ -47,6 +53,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     updateNavigation();
-
     window.addEventListener('scroll', updateNavigation);
 });

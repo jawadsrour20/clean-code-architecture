@@ -60,43 +60,103 @@
         <!-- Core Principles Overview -->
         <div class="slide" id="slide-3">
             <h2>The Long-Term Benefits</h2>
-            
+          
             <h3>Team & Business Impact</h3>
             <div class="good-bad-container">
-                <div class="bad-example">
-                    <h4>❌ The Cost of Messy Code</h4>
-                    <ul>
-                        <li>Developers afraid to make changes</li>
-                        <li>Simple features take weeks to implement</li>
-                        <li>Bug fixes introduce more bugs</li>
-                        <li>Team morale and productivity decline</li>
-                        <li>Technical debt accumulates exponentially</li>
-                    </ul>
-                </div>
-                
-                <div class="good-example">
-                    <h4>✅ The Clean Code Advantage</h4>
-                    <ul>
-                        <li>Confident refactoring and feature development</li>
-                        <li>Predictable delivery timelines</li>
-                        <li>Easier troubleshooting and maintenance</li>
-                        <li>Higher team satisfaction and retention</li>
-                        <li>Sustainable development velocity</li>
-                    </ul>
-                </div>
+              <div class="bad-example">
+                <h4>❌ The Cost of Messy Code</h4>
+                <ul>
+                  <li>Developers afraid to make changes</li>
+                  <li>Simple features take weeks to implement</li>
+                  <li>Bug fixes introduce more bugs</li>
+                  <li>Team morale and productivity decline</li>
+                  <li>Technical debt accumulates exponentially</li>
+                </ul>
+              </div>
+          
+              <div class="good-example">
+                <h4>✅ The Clean Code Advantage</h4>
+                <ul>
+                  <li>Confident refactoring and feature development</li>
+                  <li>Predictable delivery timelines</li>
+                  <li>Easier troubleshooting and maintenance</li>
+                  <li>Higher team satisfaction and retention</li>
+                  <li>Sustainable development velocity</li>
+                </ul>
+              </div>
             </div>
-
+          
             <div class="key-takeaway">
-                <strong>The Rule of 10:</strong> Code is read 10 times more often than it's written. 
-                A small investment in clarity pays dividends over the software's lifetime.
+              <strong>The Rule of 10:</strong> Code is read 10 times more often than it's written.
+              A small investment in clarity pays dividends over the software's lifetime.
             </div>
-
+          
             <h3>Quality Leads to Reliability</h3>
             <p style="font-size: 1.1em; line-height: 1.8;">
-                Clean code naturally leads to more reliable software. When code is well-structured and easy to understand, 
-                edge cases become obvious, error handling becomes systematic, and testing becomes straightforward.
+              Clean code naturally leads to more reliable software. When code is well-structured and easy to understand,
+              edge cases become obvious, error handling becomes systematic, and testing becomes straightforward.
             </p>
-        </div>
+          
+            <h3>👨‍💻 Code Example: Discount Calculation</h3>
+          
+            <div class="code-compare">
+              <div class="bad-example">
+                <h4>❌ Messy, Hard-to-Maintain Code</h4>
+                <div class="code-block" data-lang="C#">
+          <pre><code>public class OrderService {
+              public double GetFinalPrice(int customerType, double total) {
+                  if (customerType == 1) {
+                      return total - (total * 0.1); // VIP
+                  } else if (customerType == 2) {
+                      return total - (total * 0.05); // Regular
+                  } else {
+                      return total; // New customer, no discount
+                  }
+              }
+          }</code></pre>
+                </div>
+              </div>
+          
+              <div class="good-example">
+                <h4>✅ Clean, Extendable, Testable Code</h4>
+                <div class="code-block" data-lang="C#">
+          <pre><code>public interface IDiscountStrategy {
+              double ApplyDiscount(double total);
+          }
+          
+          public class VipDiscount : IDiscountStrategy {
+              public double ApplyDiscount(double total) => total * 0.9;
+          }
+          
+          public class RegularDiscount : IDiscountStrategy {
+              public double ApplyDiscount(double total) => total * 0.95;
+          }
+          
+          public class NoDiscount : IDiscountStrategy {
+              public double ApplyDiscount(double total) => total;
+          }
+          
+          public class DiscountFactory {
+              public static IDiscountStrategy GetStrategy(CustomerType type) => type switch {
+                  CustomerType.Vip => new VipDiscount(),
+                  CustomerType.Regular => new RegularDiscount(),
+                  _ => new NoDiscount()
+              };
+          }
+          
+          public enum CustomerType { Vip, Regular, New }
+          
+          public class OrderService {
+              public double GetFinalPrice(CustomerType customerType, double total) {
+                  var strategy = DiscountFactory.GetStrategy(customerType);
+                  return strategy.ApplyDiscount(total);
+              }
+          }</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+          
 
         <!-- Opening Philosophy -->
         <div class="slide" id="slide-4">
@@ -113,55 +173,54 @@
         </div>
 
         <!-- Deep Dive: Naming -->
-        <div class="slide" id="slide-4">
+        <div class="slide" id="slide-5">
             <h2>Advanced Naming Strategies</h2>
             <h3>Beyond "Make it Descriptive"</h3>
-            
+          
             <div class="good-bad-container">
-                <div class="bad-example">
-                    <h4>❌ Vague & Context-Free</h4>
-                    <div class="code-block" data-lang="JavaScript">
-function process(data) {
-    const result = [];
-    for (let i = 0; i < data.length; i++) {
-        if (data[i].status === 'active') {
-            result.push(transform(data[i]));
-        }
-    }
-    return result;
-}</div>
+              <div class="bad-example" style="margin-left: -100px;">
+                <h4>❌ Vague & Context-Free</h4>
+                <div class="code-block" data-lang="JavaScript">
+          <pre><code>function process(data) {
+            const result = [];
+            for (let i = 0; i &lt; data.length; i++) {
+              if (data[i].status === 'active') {
+                result.push(transform(data[i]));
+              }
+            }
+            return result;
+          }</code></pre>
                 </div>
-                
-                <div class="good-example">
-                    <h4>✅ Intent-Revealing & Domain-Specific</h4>
-                    <div class="code-block" data-lang="JavaScript">
-function extractActiveUserProfiles(userAccounts) {
-    const activeProfiles = [];
-    
-    for (const account of userAccounts) {
-        if (account.isActiveSubscriber()) {
-            activeProfiles.push(
-                account.toPublicProfile()
-            );
-        }
-    }
-    
-    return activeProfiles;
-}</div>
+              </div>
+          
+              <div class="good-example">
+                <h4>✅ Intent-Revealing & Domain-Specific</h4>
+                <div class="code-block" data-lang="JavaScript">
+          <pre><code>function extractActiveUserProfiles(userAccounts) {
+            const activeProfiles = [];
+            for (const account of userAccounts) {
+              if (account.isActiveSubscriber()) {
+                activeProfiles.push(account.toPublicProfile());
+              }
+            }
+            return activeProfiles;
+          }</code></pre>
                 </div>
+              </div>
             </div>
-
+          
             <h3>Advanced Naming Principles</h3>
             <ul style="font-size: 1.1em; line-height: 1.8;">
-                <li><strong>Use Problem Domain Language:</strong> If you're building a banking system, use terms like "ledger", "transaction", "reconciliation"</li>
-                <li><strong>Avoid Mental Mapping:</strong> Don't make readers translate abbreviations or cryptic names</li>
-                <li><strong>Use Searchable Names:</strong> Avoid single-letter variables except for short loop counters</li>
-                <li><strong>Class Names = Nouns, Method Names = Verbs:</strong> `UserRepository.findActiveUsers()` not `UserRepository.activeUsers()`</li>
+              <li><strong>Use Problem Domain Language:</strong> If you're building a banking system, use terms like <code>ledger</code>, <code>transaction</code>, <code>reconciliation</code></li>
+              <li><strong>Avoid Mental Mapping:</strong> Don’t make readers translate abbreviations or cryptic names</li>
+              <li><strong>Use Searchable Names:</strong> Avoid single-letter variables except for simple loop counters</li>
+              <li><strong>Class Names = Nouns, Method Names = Verbs:</strong> Use <code>UserRepository.findActiveUsers()</code> instead of <code>UserRepository.activeUsers()</code></li>
             </ul>
         </div>
+          
 
         <!-- Functions: The Building Blocks -->
-        <div class="slide" id="slide-5">
+        <div class="slide" id="slide-6">
             <h2>Functions: The Art of Doing One Thing Well</h2>
             
             <h3>The 20-Line Rule (And Why It Matters)</h3>
@@ -218,147 +277,220 @@ def process_order(order_data):
         </div>
 
         <!-- Error Handling Excellence -->
-        <div class="slide" id="slide-6">
+        <div class="slide" id="slide-7">
             <h2>Error Handling: Beyond Try-Catch</h2>
-            
+          
             <h3>The Result Pattern (Advanced)</h3>
-            <p>Move beyond exceptions for expected failures. Use Result types for better error handling.</p>
-
+            <p>
+              Move beyond exceptions for <strong>expected failures</strong> (e.g., invalid input, business rule violations).
+              Use the <strong>Result</strong> pattern to explicitly model success and failure outcomes.
+            </p>
+          
             <div class="code-block" data-lang="TypeScript">
-// Result Pattern Implementation
-type Result<T, E> = Success<T> | Failure<E>;
-
-class Success<T> {
-    constructor(public value: T) {}
-    isSuccess(): this is Success<T> { return true; }
-    isFailure(): this is Failure<any> { return false; }
-}
-
-class Failure<E> {
-    constructor(public error: E) {}
-    isSuccess(): this is Success<any> { return false; }
-    isFailure(): this is Failure<E> { return true; }
-}
-
-// Usage
-async function validateAndProcessUser(userData: UserData): Promise<Result<User, ValidationError>> {
-    const validationResult = validateUser(userData);
-    
-    if (validationResult.isFailure()) {
-        return new Failure(validationResult.error);
-    }
-    
-    const user = await createUser(validationResult.value);
-    return new Success(user);
-}</div>
-
+          <pre><code>// Result Pattern Implementation
+          type Result&lt;T, E&gt; = Success&lt;T&gt; | Failure&lt;E&gt;;
+          
+          class Success&lt;T&gt; {
+            constructor(public value: T) {}
+            isSuccess(): this is Success&lt;T&gt; { return true; }
+            isFailure(): this is Failure&lt;any&gt; { return false; }
+          }
+          
+          class Failure&lt;E&gt; {
+            constructor(public error: E) {}
+            isSuccess(): this is Success&lt;any&gt; { return false; }
+            isFailure(): this is Failure&lt;E&gt; { return true; }
+          }
+          
+          // Usage Example
+          async function validateAndProcessUser(userData: UserData): Promise&lt;Result&lt;User, ValidationError&gt;&gt; {
+            const validationResult = validateUser(userData);
+            
+            if (validationResult.isFailure()) {
+              return new Failure(validationResult.error);
+            }
+            
+            const user = await createUser(validationResult.value);
+            return new Success(user);
+          }</code></pre>
+            </div>
+            <h3>Why the Result Pattern?</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+              The <code>Result</code> pattern makes success and failure <strong>explicit</strong> in the type system, leading to more robust and 
+              readable code. It's especially useful in asynchronous flows and complex domains where multiple failure types can occur.
+            </p>
             <h3>Error Handling Principles</h3>
             <ul style="font-size: 1.1em; line-height: 1.8;">
-                <li><strong>Use Exceptions for Exceptional Cases:</strong> Not for business logic flow</li>
-                <li><strong>Fail Fast at Boundaries:</strong> Validate inputs early and completely</li>
-                <li><strong>Provide Context:</strong> Error messages should help debugging</li>
-                <li><strong>Don't Return Null:</strong> Use Optional/Maybe types or throw exceptions</li>
+              <li>
+                <strong>Use Exceptions for Exceptional Cases:</strong> 
+                Reserve exceptions for <em>unrecoverable errors</em> (e.g., disk failure, database outage, broken invariants). 
+                Do <strong>not</strong> use exceptions to control regular business logic flow.
+              </li>
+              <li>
+                <strong>Fail Fast at Boundaries:</strong> 
+                Validate all inputs at the system’s boundaries (e.g., APIs, user input). Don’t let invalid data propagate.
+              </li>
+              <li>
+                <strong>Provide Context:</strong> 
+                Error messages should include meaningful detail (e.g., which user ID, which field failed).
+              </li>
+              <li>
+                <strong>Don't Return Null:</strong> 
+                Prefer <code>Optional</code>, <code>Maybe</code>, or a well-defined <code>Result</code> type. Nulls invite runtime surprises.
+              </li>
             </ul>
-        </div>
+            <div class="key-takeaway">
+                "Errors should never pass silently. Unless explicitly silenced."
+                <br><em>— Python Zen</em>
+          </div>
+          </div>
 
         <!-- Clean Architecture Deep Dive -->
-        <div class="slide" id="slide-7">
+        <div class="slide" id="slide-8">
             <h2>Clean Architecture: Beyond MVC</h2>
-            
+          
+            <h3>The Dependency Rule</h3>
             <div class="architecture-diagram">
-                <h3>The Dependency Rule</h3>
-                <div class="layer" style="background: #e74c3c;">Frameworks & Drivers (External)</div>
-                <div class="layer" style="background: #f39c12;">Interface Adapters (Controllers, Gateways)</div>
-                <div class="layer" style="background: #3498db;">Application Business Rules (Use Cases)</div>
-                <div class="layer" style="background: #27ae60;">Enterprise Business Rules (Entities)</div>
+              <div class="layer" style="background: #e74c3c;">Frameworks & Drivers (External)</div>
+              <div class="layer" style="background: #f39c12;">Interface Adapters (Controllers, Gateways)</div>
+              <div class="layer" style="background: #3498db;">Application Business Rules (Use Cases)</div>
+              <div class="layer" style="background: #27ae60;">Enterprise Business Rules (Entities)</div>
             </div>
-
+          
             <h3>Key Insights</h3>
             <div class="principles-grid">
-                <div class="principle-card">
-                    <h4>Dependency Inversion</h4>
-                    <p>High-level modules should not depend on low-level modules. Both should depend on abstractions.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Boundaries Matter</h4>
-                    <p>Create clear boundaries between layers. Each layer should know nothing about the layers outside it.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Testability by Design</h4>
-                    <p>When business logic is independent of frameworks, testing becomes natural and fast.</p>
-                </div>
+              <div class="principle-card">
+                <h4>Dependency Inversion</h4>
+                <p>High-level modules should not depend on low-level modules. Both should depend on abstractions.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Boundaries Matter</h4>
+                <p>Create clear boundaries between layers. Each layer should know nothing about the layers outside it.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Testability by Design</h4>
+                <p>When business logic is independent of frameworks, testing becomes natural and fast.</p>
+              </div>
             </div>
-        </div>
-
+          
+            <h3>Feature Slicing: Organizing by Behavior</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+              Instead of organizing code by technical concern (controllers, models, views), organize it by <strong>business capability</strong>. 
+              This is called <strong>feature slicing</strong> and aligns your codebase with your domain language and product features.
+            </p>
+          
+            <div class="code-block" data-lang="plaintext">
+          <pre><code>src/
+          ├── UserManagement/
+          │   ├── Domain/
+          │   │   └── User.cs
+          │   ├── Application/
+          │   │   ├── CreateUserUseCase.cs
+          │   │   └── IUserRepository.cs
+          │   ├── Infrastructure/
+          │   │   └── SqlUserRepository.cs
+          │   └── Interface/
+          │       └── UserController.cs
+          ├── Orders/
+          │   ├── Domain/
+          │   ├── Application/
+          │   ├── Infrastructure/
+          │   └── Interface/
+          </code></pre>
+            </div>
+          
+            <p style="font-size: 1.1em; line-height: 1.8;">
+              This approach supports:
+              <ul style="font-size: 1.1em; line-height: 1.8; margin-top: 0.5em;">
+                <li><strong>Scalability:</strong> Teams can own isolated features end-to-end</li>
+                <li><strong>Modularity:</strong> Easy to delete or refactor a single feature without side effects</li>
+                <li><strong>Onboarding:</strong> New developers can focus on one feature context at a time</li>
+              </ul>
+            </p>
+          </div>
+          
         <!-- Real-World Architecture Example -->
-        <div class="slide" id="slide-8">
-            <h2>Architecture in Practice: E-commerce System</h2>
-            
+        <div class="slide" id="slide-9">
+            <h2>Architecture in Practice: E-Commerce System</h2>
+          
+            <p style="font-size: 1.1em; line-height: 1.7;">
+              Let’s walk through a realistic example using Clean Architecture for an e-commerce order workflow.
+              Responsibilities are clearly split across layers for testability, flexibility, and long-term maintainability.
+            </p>
+          
+            <h3>🧩 Domain Layer — Business Logic (Pure & Framework-Free)</h3>
             <div class="code-block" data-lang="TypeScript">
-// Domain Layer (Core Business Logic)
-class Order {
-    constructor(
-        private customerId: CustomerId,
-        private items: OrderItem[],
-        private status: OrderStatus = OrderStatus.Pending
-    ) {}
-
-    calculateTotal(): Money {
-        return this.items.reduce(
-            (total, item) => total.add(item.getSubtotal()),
-            Money.zero()
-        );
-    }
-
-    canBeShipped(): boolean {
-        return this.status === OrderStatus.Confirmed && 
-               this.hasShippableItems();
-    }
-}</div>
-
-            <div class="code-block" data-lang="TypeScript">
-// Application Layer (Use Cases)
-class PlaceOrderUseCase {
-    constructor(
-        private orderRepository: OrderRepository,
-        private paymentService: PaymentService,
-        private inventoryService: InventoryService
-    ) {}
-
-    async execute(command: PlaceOrderCommand): Promise<Result<OrderId, OrderError>> {
-        // 1. Validate inventory
-        const inventoryCheck = await this.inventoryService.checkAvailability(command.items);
-        if (inventoryCheck.isFailure()) {
-            return new Failure(new InsufficientInventoryError());
-        }
-
-        // 2. Create order
-        const order = Order.create(command.customerId, command.items);
-        
-        // 3. Process payment
-        const paymentResult = await this.paymentService.charge(
-            command.paymentMethod, 
-            order.calculateTotal()
-        );
-        
-        if (paymentResult.isFailure()) {
-            return new Failure(new PaymentFailedError());
-        }
-
-        // 4. Save order
-        const savedOrder = await this.orderRepository.save(order);
-        return new Success(savedOrder.id);
-    }
-}</div>
-
-            <div class="key-takeaway">
-                Notice how business logic (Order class) knows nothing about databases, web frameworks, or external services. 
-                This makes it infinitely testable and portable.
+          <pre><code>class Order {
+            constructor(
+              private customerId: CustomerId,
+              private items: OrderItem[],
+              private status: OrderStatus = OrderStatus.Pending
+            ) {}
+          
+            calculateTotal(): Money {
+              return this.items.reduce(
+                (total, item) => total.add(item.getSubtotal()),
+                Money.zero()
+              );
+            }
+          
+            canBeShipped(): boolean {
+              return this.status === OrderStatus.Confirmed &&
+                     this.hasShippableItems();
+            }
+          
+            private hasShippableItems(): boolean {
+              return this.items.length > 0;
+            }
+          }</code></pre>
             </div>
-        </div>
+          
+            <h3>🚀 Application Layer — Use Case Orchestration</h3>
+            <div class="code-block" data-lang="TypeScript">
+          <pre><code>class PlaceOrderUseCase {
+            constructor(
+              private orderRepository: OrderRepository,
+              private paymentService: PaymentService,
+              private inventoryService: InventoryService
+            ) {}
+          
+            async execute(command: PlaceOrderCommand): Promise&lt;Result&lt;OrderId, OrderError&gt;&gt; {
+              // 1. Validate inventory
+              const inventoryCheck = await this.inventoryService.checkAvailability(command.items);
+              if (inventoryCheck.isFailure()) {
+                return new Failure(new InsufficientInventoryError());
+              }
+          
+              // 2. Create order
+              const order = new Order(command.customerId, command.items);
+          
+              // 3. Process payment
+              const paymentResult = await this.paymentService.charge(
+                command.paymentMethod,
+                order.calculateTotal()
+              );
+          
+              if (paymentResult.isFailure()) {
+                return new Failure(new PaymentFailedError());
+              }
+          
+              // 4. Save order
+              const savedOrder = await this.orderRepository.save(order);
+              return new Success(savedOrder.id);
+            }
+          }</code></pre>
+            </div>
+          
+            <div class="key-takeaway" style="margin-top: 2em;">
+              <strong>🔑 Key Takeaway:</strong><br>
+              <em>The <code>Order</code> class encapsulates all business logic and is independent of frameworks, databases, or web concerns.</em><br>
+              This allows you to test and evolve the domain model safely and reuse it across contexts.
+            </div>
+          </div>
+          
 
         <!-- Code Quality Metrics -->
-        <div class="slide" id="slide-9">
+        <div class="slide" id="slide-10">
             <h2>Measuring Clean Code: The Metrics</h2>
             
             <div class="metrics-container">
@@ -398,56 +530,66 @@ class PlaceOrderUseCase {
         </div>
 
         <!-- Testing Strategies -->
-        <div class="slide" id="slide-10">
+        <div class="slide" id="slide-11">
             <h2>Testing: The Safety Net of Clean Code</h2>
-            
+          
             <h3>The Testing Pyramid Evolved</h3>
             <div class="architecture-diagram">
-                <div class="layer" style="background: #e74c3c;">E2E Tests (Few, Slow, Brittle)</div>
-                <div class="layer" style="background: #f39c12;">Integration Tests (Some, Medium Speed)</div>
-                <div class="layer" style="background: #3498db;">Unit Tests (Many, Fast, Reliable)</div>
-                <div class="layer" style="background: #27ae60;">Static Analysis (Continuous, Instant)</div>
+              <div class="layer" style="background: #e74c3c;">E2E Tests (Few, Slow, Brittle)</div>
+              <div class="layer" style="background: #f39c12;">Integration Tests (Some, Medium Speed)</div>
+              <div class="layer" style="background: #3498db;">Unit Tests (Many, Fast, Reliable)</div>
+              <div class="layer" style="background: #27ae60;">Static Analysis (Continuous, Instant)</div>
             </div>
-
-            <h3>Advanced Testing Principles</h3>
+          
+            <h3>Example</h3>
             <div class="good-bad-container">
-                <div class="bad-example">
-                    <h4>❌ Testing Implementation Details</h4>
-                    <div class="code-block" data-lang="JavaScript">
-test('UserService calls database.save with correct params', () => {
-    const mockDb = jest.mock();
-    const userService = new UserService(mockDb);
-    
-    userService.createUser('John', 'john@email.com');
-    
-    expect(mockDb.save).toHaveBeenCalledWith({
-        name: 'John',
-        email: 'john@email.com'
-    });
-});</div>
+              <div class="bad-example">
+                <h4>❌ Testing Implementation Details</h4>
+                <div class="code-block" data-lang="JavaScript">
+          <pre><code>test('UserService calls database.save with correct params', () => {
+            const mockDb = jest.mock();
+            const userService = new UserService(mockDb);
+          
+            userService.createUser('John', 'john@email.com');
+          
+            expect(mockDb.save).toHaveBeenCalledWith({
+              name: 'John',
+              email: 'john@email.com'
+            });
+          });</code></pre>
                 </div>
-                
-                <div class="good-example">
-                    <h4>✅ Testing Behavior & Outcomes</h4>
-                    <div class="code-block" data-lang="JavaScript">
-test('UserService creates user successfully', async () => {
-    const userService = new UserService(inMemoryRepository);
-    
-    const result = await userService.createUser('John', 'john@email.com');
-    
-    expect(result.isSuccess()).toBe(true);
-    expect(result.value.name).toBe('John');
-    expect(result.value.email).toBe('john@email.com');
-    
-    const savedUser = await userService.findByEmail('john@email.com');
-    expect(savedUser).toBeDefined();
-});</div>
+              </div>
+              <br/>
+              <div class="good-example">
+                <h4>✅ Testing Behavior & Outcomes</h4>
+                <div class="code-block" data-lang="JavaScript">
+          <pre><code>test('UserService creates user successfully', async () => {
+            const userService = new UserService(inMemoryRepository);
+          
+            const result = await userService.createUser('John', 'john@email.com');
+          
+            expect(result.isSuccess()).toBe(true);
+            expect(result.value.name).toBe('John');
+            expect(result.value.email).toBe('john@email.com');
+          
+            const savedUser = await userService.findByEmail('john@email.com');
+            expect(savedUser).toBeDefined();
+          });</code></pre>
                 </div>
+              </div>
             </div>
-        </div>
+          
+            <div class="key-takeaway" style="margin-top: 2em;">
+              <strong>🔍 Key Takeaway:</strong><br>
+              Tests should focus on <em>observable behavior and outcomes</em>—not internal implementation details.<br>
+              Fragile tests that rely on method calls or mocks tightly couple your tests to refactoring noise.
+              Instead, design your system with testability in mind and validate what matters most: the results.
+            </div>
+          </div>
+          
 
         <!-- Tools & Practices -->
-        <div class="slide" id="slide-11">
+        <div class="slide" id="slide-12">
             <h2>Tools for Maintaining Excellence</h2>
             
             <div class="tools-grid">
@@ -491,7 +633,7 @@ test('UserService creates user successfully', async () => {
         </div>
 
         <!-- Refactoring Strategies -->
-        <div class="slide" id="slide-12">
+        <div class="slide" id="slide-13">
             <h2>The Art of Refactoring</h2>
             
             <h3>The Boy Scout Rule</h3>
@@ -529,7 +671,9 @@ test('UserService creates user successfully', async () => {
                 <li>Code that works perfectly and rarely changes</li>
             </ul>
         </div>
-        <div class="slide" id="slide-12">
+
+        <!-- Real-World Refactoring Example -->
+        <div class="slide" id="slide-14">
             <h2>Real-World Refactoring: C# Example</h2>
             
             <h3>Before: Monolithic Service Class</h3>
@@ -547,11 +691,12 @@ public class UserService
             
         // Direct database access
         using var connection = new SqlConnection(connectionString);
-        var existingUser = await        <!-- Introduction to Clean Code -->
+        var existingUser = await
+        </div>
         </div>
 
         <!-- Team Practices -->
-        <div class="slide" id="slide-13">
+        <div class="slide" id="slide-15">
             <h2>Building a Culture of Clean Code</h2>
             
             <h3>Code Review Excellence</h3>
@@ -600,7 +745,7 @@ public class UserService
         </div>
 
         <!-- Performance & Clean Code -->
-        <div class="slide" id="slide-14">
+        <div class="slide" id="slide-16">
             <h2>Clean Code ≠ Slow Code</h2>
             
             <h3>The Performance Paradox</h3>
@@ -653,129 +798,142 @@ function calculateTotalScore(users) {
         </div>
 
         <!-- Legacy Code Strategies -->
-        <div class="slide" id="slide-15">
+        <div class="slide" id="slide-17">
             <h2>Working with Legacy Code</h2>
-            
+          
             <h3>The Strangler Fig Pattern</h3>
             <div class="architecture-diagram">
-                <h4>Gradual Migration Strategy</h4>
-                <div class="layer" style="background: #e74c3c;">Legacy System (Gradually Shrinking)</div>
-                <div class="layer" style="background: #f39c12;">Facade Layer (Translation & Routing)</div>
-                <div class="layer" style="background: #27ae60;">New Clean System (Growing)</div>
+              <h4>Gradual Migration Strategy</h4>
+              <div class="layer" style="background: #e74c3c;">Legacy System (Gradually Shrinking)</div>
+              <div class="layer" style="background: #f39c12;">Facade Layer (Translation &amp; Routing)</div>
+              <div class="layer" style="background: #27ae60;">New Clean System (Growing)</div>
             </div>
-
+          
             <h3>Legacy Code Principles</h3>
             <div class="principles-grid">
-                <div class="principle-card">
-                    <h4>Add Tests Before Changing</h4>
-                    <p>Characterization tests capture current behavior, giving you confidence to refactor.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Break Dependencies</h4>
-                    <p>Use dependency injection, seams, and adapter patterns to isolate code under test.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Make Small Changes</h4>
-                    <p>Large refactoring of legacy code is risky. Make small, incremental improvements.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Extract and Test</h4>
-                    <p>Extract small pieces of functionality, add comprehensive tests, then refactor safely.</p>
-                </div>
+              <div class="principle-card">
+                <h4>Add Tests Before Changing</h4>
+                <p>Characterization tests capture current behavior, giving you confidence to refactor.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Break Dependencies</h4>
+                <p>Use dependency injection, seams, and adapter patterns to isolate code under test.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Make Small Changes</h4>
+                <p>Large refactoring of legacy code is risky. Make small, incremental improvements.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Extract and Test</h4>
+                <p>Extract small pieces of functionality, add comprehensive tests, then refactor safely.</p>
+              </div>
             </div>
-
+          
             <div class="code-block" data-lang="Java">
-// Legacy Code: Hard to test, tightly coupled
-public class OrderProcessor {
-    public void processOrder(String orderId) {
-        // Direct database access
-        Connection conn = DriverManager.getConnection("jdbc:...");
-        // ... 50 lines of mixed business logic and infrastructure
-        
-        // Direct email sending
-        EmailService.sendConfirmation(order.getCustomerEmail());
-    }
-}
-
-// Refactored: Testable, single responsibility
-public class OrderProcessor {
-    private final OrderRepository orderRepository;
-    private final NotificationService notificationService;
-    
-    public OrderProcessor(OrderRepository orderRepository, 
-                         NotificationService notificationService) {
-        this.orderRepository = orderRepository;
-        this.notificationService = notificationService;
-    }
-    
-    public void processOrder(OrderId orderId) {
-        Order order = orderRepository.findById(orderId);
-        order.markAsProcessed();
-        orderRepository.save(order);
-        
-        notificationService.sendOrderConfirmation(order);
-    }
-}</div>
+          <pre><code>// Legacy Code: Hard to test, tightly coupled
+          public class OrderProcessor {
+              public void processOrder(String orderId) {
+                  // Direct database access
+                  Connection conn = DriverManager.getConnection("jdbc:...");
+                  // ... 50 lines of mixed business logic and infrastructure
+                  
+                  // Direct email sending
+                  EmailService.sendConfirmation(order.getCustomerEmail());
+              }
+          }
+          
+          // Refactored: Testable, single responsibility
+          public class OrderProcessor {
+              private final OrderRepository orderRepository;
+              private final NotificationService notificationService;
+          
+              public OrderProcessor(OrderRepository orderRepository, 
+                                    NotificationService notificationService) {
+                  this.orderRepository = orderRepository;
+                  this.notificationService = notificationService;
+              }
+          
+              public void processOrder(OrderId orderId) {
+                  Order order = orderRepository.findById(orderId);
+                  order.markAsProcessed();
+                  orderRepository.save(order);
+          
+                  notificationService.sendOrderConfirmation(order);
+              }
+          }
+          </code></pre>
+            </div>
         </div>
+          
 
         <!-- Microservices & Clean Architecture -->
-        <div class="slide" id="slide-16">
+        <div class="slide" id="slide-18">
             <h2>Clean Code in Distributed Systems</h2>
-            
+          
             <h3>The Distributed Monolith Anti-Pattern</h3>
             <div class="key-takeaway">
-                Just because services are deployed separately doesn't mean they're well-designed. 
-                Clean architecture principles apply at the service level too.
+              Just because services are deployed separately doesn't mean they're well-designed.<br>
+              Clean architecture principles apply at the service level too.
             </div>
-
+          
+            <h3>Monolith vs Microservices (Brief)</h3>
+            <p style="font-size: 1.1em; line-height: 1.6;">
+              <strong>Monolith:</strong> A single deployable application where all components share the same codebase and runtime.<br>
+              <strong>Microservices:</strong> An architectural style that breaks down the system into small, autonomous services that communicate over the network.<br>
+              The distributed monolith occurs when services are deployed separately but remain tightly coupled, negating the benefits of microservices.
+            </p>
+          
             <h3>Service Design Principles</h3>
             <div class="principles-grid">
-                <div class="principle-card">
-                    <h4>Domain-Driven Boundaries</h4>
-                    <p>Services should align with business domains, not technical layers. Order Service, not Database Service.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>API-First Design</h4>
-                    <p>Design your service contracts first. This forces you to think about clean interfaces.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Autonomous Services</h4>
-                    <p>Each service should be independently deployable and testable. Minimize shared dependencies.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Graceful Degradation</h4>
-                    <p>Services should handle partner service failures gracefully. Circuit breakers, fallbacks, timeouts.</p>
-                </div>
+              <div class="principle-card">
+                <h4>Domain-Driven Boundaries</h4>
+                <p>Services should align with business domains, not technical layers. For example, an Order Service, not a Database Service.</p>
+              </div>
+              <div class="principle-card">
+                <h4>API-First Design</h4>
+                <p>Design your service contracts first. This forces you to think about clean, stable interfaces.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Autonomous Services</h4>
+                <p>Each service should be independently deployable and testable. Minimize shared dependencies.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Graceful Degradation</h4>
+                <p>Services should handle partner service failures gracefully with circuit breakers, fallbacks, and timeouts.</p>
+              </div>
             </div>
-
+          
             <div class="code-block" data-lang="TypeScript">
-// Clean Service Interface Design
-interface PaymentService {
-    processPayment(request: PaymentRequest): Promise<Result<PaymentResult, PaymentError>>;
-    refundPayment(paymentId: PaymentId): Promise<Result<RefundResult, RefundError>>;
-    getPaymentStatus(paymentId: PaymentId): Promise<PaymentStatus>;
-}
-
-// Implementation handles all the complexity
-class StripePaymentService implements PaymentService {
-    async processPayment(request: PaymentRequest): Promise<Result<PaymentResult, PaymentError>> {
-        try {
-            const stripeResult = await this.stripeClient.charges.create({
-                amount: request.amount.toCents(),
-                currency: request.currency.code,
-                source: request.paymentMethod.token
-            });
-            
-            return new Success(PaymentResult.fromStripeCharge(stripeResult));
-        } catch (error) {
-            return new Failure(PaymentError.fromStripeError(error));
-        }
-    }
-}</div>
-        </div>
+          <pre><code>// Clean Service Interface Design
+          interface PaymentService {
+            processPayment(request: PaymentRequest): Promise&lt;Result&lt;PaymentResult, PaymentError&gt;&gt;;
+            refundPayment(paymentId: PaymentId): Promise&lt;Result&lt;RefundResult, RefundError&gt;&gt;;
+            getPaymentStatus(paymentId: PaymentId): Promise&lt;PaymentStatus&gt;;
+          }
+          
+          // Implementation handles all the complexity
+          class StripePaymentService implements PaymentService {
+            async processPayment(request: PaymentRequest): Promise&lt;Result&lt;PaymentResult, PaymentError&gt;&gt; {
+              try {
+                const stripeResult = await this.stripeClient.charges.create({
+                  amount: request.amount.toCents(),
+                  currency: request.currency.code,
+                  source: request.paymentMethod.token,
+                });
+          
+                return new Success(PaymentResult.fromStripeCharge(stripeResult));
+              } catch (error) {
+                return new Failure(PaymentError.fromStripeError(error));
+              }
+            }
+          }
+          </code></pre>
+            </div>
+          </div>
+          
 
         <!-- Monitoring & Observability -->
-        <div class="slide" id="slide-17">
+        <div class="slide" id="slide-19">
             <h2>Clean Code Meets Observability</h2>
             
             <h3>Structured Logging</h3>
@@ -823,7 +981,7 @@ logger.warn('User login failed', {
         </div>
 
         <!-- Security & Clean Code -->
-        <div class="slide" id="slide-18">
+        <div class="slide" id="slide-20">
             <h2>Security Through Clean Design</h2>
             
             <h3>Security as Architecture</h3>
@@ -891,137 +1049,157 @@ class UserService {
         </div>
 
         <!-- Documentation & Clean Code -->
-        <div class="slide" id="slide-19">
+        <div class="slide" id="slide-21">
             <h2>Documentation: When Code Isn't Enough</h2>
-            
+          
             <h3>The Documentation Hierarchy</h3>
             <div class="architecture-diagram">
-                <div class="layer" style="background: #27ae60;">Self-Documenting Code (Names, Structure)</div>
-                <div class="layer" style="background: #3498db;">Code Comments (Why, Not What)</div>
-                <div class="layer" style="background: #f39c12;">API Documentation (Contracts, Examples)</div>
-                <div class="layer" style="background: #e74c3c;">Architecture Documentation (Decisions, Context)</div>
+              <div class="layer" style="background: #27ae60;">Self-Documenting Code (Names, Structure)</div>
+              <div class="layer" style="background: #3498db;">Code Comments (Why, Not What)</div>
+              <div class="layer" style="background: #f39c12;">API Documentation (Contracts, Examples)</div>
+              <div class="layer" style="background: #e74c3c;">Architecture Documentation (Decisions, Context)</div>
             </div>
-
+          
             <h3>When to Comment</h3>
             <div class="good-bad-container">
-                <div class="bad-example">
-                    <h4>❌ Obvious Comments</h4>
-                    <div class="code-block" data-lang="Java">
-// Increment i by 1
-i++;
-
-// Check if user is null
-if (user == null) {
-    return false;
-}</div>
+              <div class="bad-example">
+                <h4>❌ Obvious Comments</h4>
+                <div class="code-block" data-lang="Java">
+          <pre><code>// Increment i by 1
+          i++;
+          
+          // Check if user is null
+          if (user == null) {
+              return false;
+          }
+          </code></pre>
                 </div>
-                
-                <div class="good-example">
-                    <h4>✅ Intent and Context Comments</h4>
-                    <div class="code-block" data-lang="Java">
-// Using exponential backoff to handle rate limiting
-// from the payment gateway (max 100 requests/minute)
-Thread.sleep(Math.pow(2, attemptCount) * 1000);
-
-// The seemingly complex regex handles edge cases found
-// in production: unicode characters, multiple spaces,
-// and trailing punctuation. See issue #1234 for examples.
-String normalized = input.replaceAll(NORMALIZATION_REGEX, " ");</div>
+              </div>
+          
+              <div class="good-example">
+                <h4>✅ Intent and Context Comments</h4>
+                <div class="code-block" data-lang="Java">
+          <pre><code>// Using exponential backoff to handle rate limiting
+          // from the payment gateway (max 100 requests/minute)
+          Thread.sleep(Math.pow(2, attemptCount) * 1000);
+          
+          // The seemingly complex regex handles edge cases found
+          // in production: unicode characters, multiple spaces,
+          // and trailing punctuation. See issue #1234 for examples.
+          String normalized = input.replaceAll(NORMALIZATION_REGEX, " ");
+          </code></pre>
                 </div>
+              </div>
             </div>
-
+          
             <h3>Architecture Decision Records (ADRs)</h3>
             <div class="code-block" data-lang="Markdown">
-# ADR-001: Use Result Pattern for Error Handling
-
-## Status
-Accepted
-
-## Context
-Our current exception-based error handling makes it difficult to distinguish 
-between expected business failures and unexpected technical failures.
-
-## Decision
-We will use the Result<T, E> pattern for operations that can fail in expected ways.
-
-## Consequences
-- Positive: Explicit error handling, better API contracts
-- Positive: Easier to test error scenarios
-- Negative: More verbose than exceptions
-- Negative: Learning curve for team members</div>
-        </div>
+          <pre><code># ADR-001: Use Result Pattern for Error Handling
+          
+          ## Status
+          Accepted
+          
+          ## Context
+          Our current exception-based error handling makes it difficult to distinguish 
+          between expected business failures and unexpected technical failures.
+          
+          ## Decision
+          We will use the Result&lt;T, E&gt; pattern for operations that can fail in expected ways.
+          
+          ## Consequences
+          - Positive: Explicit error handling, better API contracts
+          - Positive: Easier to test error scenarios
+          - Negative: More verbose than exceptions
+          - Negative: Learning curve for team members
+          </code></pre>
+            </div>
+          </div>
+          
 
         <!-- Future-Proofing Code -->
-        <div class="slide" id="slide-20">
+        <div class="slide" id="slide-22">
             <h2>Writing Code for the Future</h2>
             
             <h3>Designing for Change</h3>
             <div class="key-takeaway">
-                The only constant in software is change. 
-                Design your code to be flexible in the right places and rigid in the right places.
+              The only constant in software is change.<br>
+              Design your code to be flexible in the right places and rigid in the right places.
             </div>
-
+          
             <h3>Extensibility Patterns</h3>
             <div class="principles-grid">
-                <div class="principle-card">
-                    <h4>Open/Closed Principle</h4>
-                    <p>Open for extension, closed for modification. Use interfaces and composition to add new behavior.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Configuration over Code</h4>
-                    <p>Make behavior configurable where appropriate. But don't make everything configurable.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Plugin Architecture</h4>
-                    <p>Design extension points where you anticipate future needs. Event systems, hooks, registries.</p>
-                </div>
-                <div class="principle-card">
-                    <h4>Version Your APIs</h4>
-                    <p>Plan for API evolution from day one. Breaking changes should be opt-in, not forced.</p>
-                </div>
+              <div class="principle-card">
+                <h4>Open/Closed Principle</h4>
+                <p>Open for extension, closed for modification. Use interfaces and composition to add new behavior.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Configuration over Code</h4>
+                <p>Make behavior configurable where appropriate. But don't make everything configurable.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Plugin Architecture</h4>
+                <p>Design extension points where you anticipate future needs — event systems, hooks, registries.</p>
+              </div>
+              <div class="principle-card">
+                <h4>Version Your APIs</h4>
+                <p>Plan for API evolution from day one. Breaking changes should be opt-in, not forced.</p>
+              </div>
             </div>
-
+          
             <div class="code-block" data-lang="TypeScript">
-// Extensible Design Example
-interface NotificationChannel {
-    send(message: NotificationMessage): Promise<Result<void, NotificationError>>;
-    supports(type: NotificationType): boolean;
-}
-
-class NotificationService {
-    private channels = new Map<string, NotificationChannel>();
-    
-    registerChannel(name: string, channel: NotificationChannel): void {
-        this.channels.set(name, channel);
-    }
-    
-    async sendNotification(message: NotificationMessage): Promise<void> {
-        const availableChannels = Array.from(this.channels.values())
-            .filter(channel => channel.supports(message.type));
-            
-        if (availableChannels.length === 0) {
-            throw new Error(`No channel supports ${message.type}`);
-        }
-        
-        // Try channels in priority order
-        for (const channel of availableChannels) {
-            const result = await channel.send(message);
-            if (result.isSuccess()) {
-                return;
+          <pre><code>// Extensible Design Example
+          interface NotificationChannel {
+            send(message: NotificationMessage): Promise<Result<void, NotificationError>>;
+            supports(type: NotificationType): boolean;
+          }
+          
+          class NotificationService {
+            private channels = new Map<string, NotificationChannel>();
+          
+            registerChannel(name: string, channel: NotificationChannel): void {
+              this.channels.set(name, channel);
             }
-        }
-        
-        throw new Error('All notification channels failed');
-    }
-}
-
-// Adding new channels is easy - no modification of existing code
-notificationService.registerChannel('slack', new SlackChannel(config));
-notificationService.registerChannel('discord', new DiscordChannel(config));</div>
-        </div>
+          
+            async sendNotification(message: NotificationMessage): Promise<void> {
+              const availableChannels = Array.from(this.channels.values())
+                .filter(channel => channel.supports(message.type));
+          
+              if (availableChannels.length === 0) {
+                throw new Error(`No channel supports ${message.type}`);
+              }
+          
+              // Try channels in priority order
+              for (const channel of availableChannels) {
+                const result = await channel.send(message);
+                if (result.isSuccess()) {
+                  return;
+                }
+              }
+          
+              throw new Error('All notification channels failed');
+            }
+          }
+          
+          // Adding new channels is easy - no modification of existing code
+          notificationService.registerChannel('slack', new SlackChannel(config));
+          notificationService.registerChannel('discord', new DiscordChannel(config));
+          </code></pre>
+            </div>
+          
+            <div class="notes">
+              <h4>Notes:</h4>
+              <ul>
+                <li><strong>Open/Closed Principle:</strong> The design supports adding new notification channels without modifying the existing NotificationService.</li>
+                <li><strong>Extensibility:</strong> New behaviors are added via plugins (channels) registered dynamically at runtime.</li>
+                <li><strong>Error Handling:</strong> If no channel supports a message type or all fail, clear errors are thrown for easier debugging.</li>
+                <li><strong>Flexibility:</strong> The supports() method lets each channel declare what message types it handles, enabling selective routing.</li>
+              </ul>
+            </div>
+          </div>
+          
 
         <!-- Measuring Success -->
-        <div class="slide" id="slide-21">
+        <div class="slide" id="slide-23">
             <h2>Measuring Clean Code Success</h2>
             
             <h3>Leading vs Lagging Indicators</h3>
@@ -1073,7 +1251,7 @@ notificationService.registerChannel('discord', new DiscordChannel(config));</div
         </div>
 
         <!-- Common Pitfalls -->
-        <div class="slide" id="slide-22">
+        <div class="slide" id="slide-24">
             <h2>Common Clean Code Pitfalls</h2>
             
             <h3>When Clean Code Goes Wrong</h3>
@@ -1142,7 +1320,7 @@ public class Calculator {
         </div>
 
         <!-- Action Items -->
-        <div class="slide" id="slide-23">
+        <div class="slide" id="slide-25">
             <h2>Your Next Steps: Building Excellence</h2>
             
             <h3>Week 1: Foundation</h3>
@@ -1177,7 +1355,7 @@ public class Calculator {
         </div>
 
         <!-- Resources & Learning -->
-        <div class="slide" id="slide-24">
+        <div class="slide" id="slide-26">
             <h2>Continuing Your Journey</h2>
             
             <h3>Essential Reading</h3>
@@ -1228,19 +1406,19 @@ public class Calculator {
         </div>
 
         <!-- Closing -->
-        <div class="slide" id="slide-25">
+        <div class="slide" id="slide-27">
             <h1 style="font-size: 2.5em;">The Craft Continues</h1>
             
             <div style="text-align: center; margin: 50px 0;">
                 <p style="font-size: 1.4em; line-height: 1.8; margin-bottom: 30px;">
-                    "The ratio of time spent reading versus writing is well over 10 to 1. 
+                    "The ratio of time spent reading versus writing is well over 10 to 1.
                     We are constantly reading old code as part of the effort to write new code."
                 </p>
                 <p style="font-size: 1.1em; color: #7f8c8d; font-style: italic;">— Robert C. Martin</p>
             </div>
 
             <div class="key-takeaway">
-                Clean code is not about perfection—it's about respect. 
+                Clean code is not about perfection—it's about respect.
                 Respect for your future self, your teammates, and the users who depend on your software.
                 <br><br>
                 Every line of code is a choice. Choose wisely.
@@ -1249,9 +1427,23 @@ public class Calculator {
             <div class="speaker-info" style="margin-top: 50px;">
                 <h3>Thank You</h3>
                 <p>Questions & Discussion</p>
-                <p>Jawad Srour • Senior Software Engineer</p>
-                <p style="font-size: 0.9em; opacity: 0.8;">Let's build software that we're proud to maintain</p>
+                <p>Jawad Srour • Senior Software Engineer | Team Lead | SWE Blogger</p>
+                <p style="font-size: 0.9em; opacity: 0.8;">
+                    Let's build software that we're proud to maintain — together.
+                </p>
+            
+                <div class="linkedin-qr">
+                    <h3>Connect with me on LinkedIn</h3>
+                    <div class="qr-container">
+                        <img 
+                            src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fjawad-srour%2F" 
+                            alt="LinkedIn QR Code for Jawad Srour"
+                        />
+                    </div>
+                    <p>Scan the QR code to visit my LinkedIn profile</p>
+                </div>
             </div>
+            
         </div>
     </div>
 </body>
