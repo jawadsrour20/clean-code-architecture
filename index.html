@@ -20,8 +20,86 @@
             </div>
         </div>
 
-        <!-- Opening Philosophy -->
+        <!-- Introduction to Clean Code -->
         <div class="slide" id="slide-2">
+            <h2>Introduction to Clean Code</h2>
+            
+            <h3>What is Clean Code?</h3>
+            <p style="font-size: 1.2em; line-height: 1.8; margin-bottom: 25px;">
+                <strong>Definition:</strong> Code that is easy to read, understand, and maintain. 
+                Popularized by "Uncle Bob" Martin's seminal book <em>Clean Code</em>.
+            </p>
+            
+            <div class="key-takeaway">
+                "Anybody can write code that a computer can understand. 
+                Good programmers write code that humans can understand."
+                <br><em>— Martin Fowler</em>
+            </div>
+
+            <h3>Why Clean Code Matters</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Human-Centered Development</h4>
+                    <p>Code is written once but read hundreds of times. Optimize for human understanding first.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Faster Onboarding</h4>
+                    <p>New developers can understand and contribute to clean codebases in days, not months.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Reduced Debugging Time</h4>
+                    <p>Clear code makes bugs obvious and fixes straightforward.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Enhanced Collaboration</h4>
+                    <p>Teams spend less time deciphering code and more time building features.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Principles Overview -->
+        <div class="slide" id="slide-3">
+            <h2>The Long-Term Benefits</h2>
+            
+            <h3>Team & Business Impact</h3>
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ The Cost of Messy Code</h4>
+                    <ul>
+                        <li>Developers afraid to make changes</li>
+                        <li>Simple features take weeks to implement</li>
+                        <li>Bug fixes introduce more bugs</li>
+                        <li>Team morale and productivity decline</li>
+                        <li>Technical debt accumulates exponentially</li>
+                    </ul>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ The Clean Code Advantage</h4>
+                    <ul>
+                        <li>Confident refactoring and feature development</li>
+                        <li>Predictable delivery timelines</li>
+                        <li>Easier troubleshooting and maintenance</li>
+                        <li>Higher team satisfaction and retention</li>
+                        <li>Sustainable development velocity</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-takeaway">
+                <strong>The Rule of 10:</strong> Code is read 10 times more often than it's written. 
+                A small investment in clarity pays dividends over the software's lifetime.
+            </div>
+
+            <h3>Quality Leads to Reliability</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Clean code naturally leads to more reliable software. When code is well-structured and easy to understand, 
+                edge cases become obvious, error handling becomes systematic, and testing becomes straightforward.
+            </p>
+        </div>
+
+        <!-- Opening Philosophy -->
+        <div class="slide" id="slide-4">
             <h2>The Invisible Craft</h2>
             <p style="font-size: 1.3em; line-height: 1.8; margin-bottom: 30px;">
                 "When software works exactly as expected, users rarely notice the craftsmanship behind it. 
@@ -31,29 +109,6 @@
             <div class="key-takeaway">
                 Excellence in code is not about showing off—it's about creating systems that stand the test of time, 
                 scale gracefully, and can be understood by the next engineer who reads it.
-            </div>
-        </div>
-
-        <!-- Core Principles Overview -->
-        <div class="slide" id="slide-3">
-            <h2>The Foundation: Core Principles</h2>
-            <div class="principles-grid">
-                <div class="principle-card">
-                    <h3>Readability First</h3>
-                    <p>Code is read 10x more than it's written. Optimize for human understanding, not computer efficiency alone.</p>
-                </div>
-                <div class="principle-card">
-                    <h3>Single Responsibility</h3>
-                    <p>Every class, function, or module should have one reason to change—one clear purpose.</p>
-                </div>
-                <div class="principle-card">
-                    <h3>Fail Fast & Loud</h3>
-                    <p>Make errors obvious and immediate. Silent failures are technical debt in disguise.</p>
-                </div>
-                <div class="principle-card">
-                    <h3>Composition over Inheritance</h3>
-                    <p>Build flexible systems through composition. Inheritance creates rigid hierarchies.</p>
-                </div>
             </div>
         </div>
 
@@ -473,6 +528,26 @@ test('UserService creates user successfully', async () => {
                 <li>During tight deadlines (plan refactoring sprints)</li>
                 <li>Code that works perfectly and rarely changes</li>
             </ul>
+        </div>
+        <div class="slide" id="slide-12">
+            <h2>Real-World Refactoring: C# Example</h2>
+            
+            <h3>Before: Monolithic Service Class</h3>
+            <div class="code-block" data-lang="C#">
+public class UserService
+{
+    public async Task<bool> ProcessUserRegistration(
+        string email, string password, string firstName, string lastName)
+    {
+        // Validation mixed with business logic
+        if (string.IsNullOrEmpty(email) || !email.Contains("@"))
+            return false;
+        if (password.Length < 8)
+            return false;
+            
+        // Direct database access
+        using var connection = new SqlConnection(connectionString);
+        var existingUser = await        <!-- Introduction to Clean Code -->
         </div>
 
         <!-- Team Practices -->

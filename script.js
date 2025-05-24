@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const slides = document.querySelectorAll('.slide');
     const navDots = document.querySelectorAll('.nav-dot');
 
-    // Create navigation dots if they don't exist
     if (navDots.length === 0) {
         const navigation = document.querySelector('.navigation') || createNavigation();
         slides.forEach((slide, index) => {
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return nav;
     }
 
-    // Update navigation on scroll
     function updateNavigation() {
         const scrollPos = window.scrollY + window.innerHeight / 2;
 
@@ -36,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Navigation click handlers
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('nav-dot')) {
             const slideIndex = parseInt(e.target.dataset.slide);
@@ -49,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Initialize
     updateNavigation();
+
     window.addEventListener('scroll', updateNavigation);
 });
