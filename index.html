@@ -309,7 +309,7 @@ def process_order(order_data):
             if (validationResult.isFailure()) {
               return new Failure(validationResult.error);
             }
-            
+
             const user = await createUser(validationResult.value);
             return new Success(user);
           }</code></pre>
