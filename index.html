@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+    <title>The Art of Clean Code and Architecture</title>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Title Slide -->
+        <div class="slide" id="slide-1">
+            <h1>The Art of Clean Code and Architecture</h1>
+            <p class="subtitle">Advanced Principles for Scalable, Maintainable Software</p>
+            <div class="speaker-info">
+                <h3>Jawad Srour</h3>
+                <p>Senior Software Engineer & Clean Code Advocate</p>
+                <p>Saturday, May 24, 2025 • 12 PM Beirut Time</p>
+            </div>
+        </div>
+
+        <!-- Opening Philosophy -->
+        <div class="slide" id="slide-2">
+            <h2>The Invisible Craft</h2>
+            <p style="font-size: 1.3em; line-height: 1.8; margin-bottom: 30px;">
+                "When software works exactly as expected, users rarely notice the craftsmanship behind it. 
+                But as engineers, we know the difference between code that merely functions and code that embodies excellence."
+            </p>
+            
+            <div class="key-takeaway">
+                Excellence in code is not about showing off—it's about creating systems that stand the test of time, 
+                scale gracefully, and can be understood by the next engineer who reads it.
+            </div>
+        </div>
+
+        <!-- Core Principles Overview -->
+        <div class="slide" id="slide-3">
+            <h2>The Foundation: Core Principles</h2>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h3>Readability First</h3>
+                    <p>Code is read 10x more than it's written. Optimize for human understanding, not computer efficiency alone.</p>
+                </div>
+                <div class="principle-card">
+                    <h3>Single Responsibility</h3>
+                    <p>Every class, function, or module should have one reason to change—one clear purpose.</p>
+                </div>
+                <div class="principle-card">
+                    <h3>Fail Fast & Loud</h3>
+                    <p>Make errors obvious and immediate. Silent failures are technical debt in disguise.</p>
+                </div>
+                <div class="principle-card">
+                    <h3>Composition over Inheritance</h3>
+                    <p>Build flexible systems through composition. Inheritance creates rigid hierarchies.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deep Dive: Naming -->
+        <div class="slide" id="slide-4">
+            <h2>Advanced Naming Strategies</h2>
+            <h3>Beyond "Make it Descriptive"</h3>
+            
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ Vague & Context-Free</h4>
+                    <div class="code-block" data-lang="JavaScript">
+function process(data) {
+    const result = [];
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].status === 'active') {
+            result.push(transform(data[i]));
+        }
+    }
+    return result;
+}</div>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ Intent-Revealing & Domain-Specific</h4>
+                    <div class="code-block" data-lang="JavaScript">
+function extractActiveUserProfiles(userAccounts) {
+    const activeProfiles = [];
+    
+    for (const account of userAccounts) {
+        if (account.isActiveSubscriber()) {
+            activeProfiles.push(
+                account.toPublicProfile()
+            );
+        }
+    }
+    
+    return activeProfiles;
+}</div>
+                </div>
+            </div>
+
+            <h3>Advanced Naming Principles</h3>
+            <ul style="font-size: 1.1em; line-height: 1.8;">
+                <li><strong>Use Problem Domain Language:</strong> If you're building a banking system, use terms like "ledger", "transaction", "reconciliation"</li>
+                <li><strong>Avoid Mental Mapping:</strong> Don't make readers translate abbreviations or cryptic names</li>
+                <li><strong>Use Searchable Names:</strong> Avoid single-letter variables except for short loop counters</li>
+                <li><strong>Class Names = Nouns, Method Names = Verbs:</strong> `UserRepository.findActiveUsers()` not `UserRepository.activeUsers()`</li>
+            </ul>
+        </div>
+
+        <!-- Functions: The Building Blocks -->
+        <div class="slide" id="slide-5">
+            <h2>Functions: The Art of Doing One Thing Well</h2>
+            
+            <h3>The 20-Line Rule (And Why It Matters)</h3>
+            <p style="margin-bottom: 25px;">Functions should be small enough to fit on your screen without scrolling. This isn't arbitrary—it's cognitive load management.</p>
+
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ The "God Function"</h4>
+                    <div class="code-block" data-lang="Python">
+def process_order(order_data):
+    # Validate data (15 lines)
+    if not order_data.get('customer_id'):
+        raise ValueError("Missing customer")
+    # ... more validation
+    
+    # Calculate pricing (20 lines)
+    base_price = order_data['items'] * 10
+    # ... complex pricing logic
+    
+    # Apply discounts (15 lines)
+    if order_data.get('coupon'):
+        # ... discount calculation
+    
+    # Save to database (10 lines)
+    # ... database operations
+    
+    # Send notifications (12 lines)
+    # ... email/SMS logic
+    
+    return order_id</div>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ Composed Functions</h4>
+                    <div class="code-block" data-lang="Python">
+def process_order(order_data):
+    validated_order = validate_order_data(order_data)
+    priced_order = calculate_order_pricing(validated_order)
+    discounted_order = apply_discounts(priced_order)
+    
+    order_id = save_order_to_database(discounted_order)
+    send_order_confirmations(order_id, discounted_order)
+    
+    return order_id
+
+# Each function above is 3-8 lines and has one clear purpose</div>
+                </div>
+            </div>
+
+            <div class="key-takeaway">
+                When you can't easily name a function without using "and", "or", or "then", 
+                it's probably doing too much and should be split.
+            </div>
+        </div>
+
+        <!-- Error Handling Excellence -->
+        <div class="slide" id="slide-6">
+            <h2>Error Handling: Beyond Try-Catch</h2>
+            
+            <h3>The Result Pattern (Advanced)</h3>
+            <p>Move beyond exceptions for expected failures. Use Result types for better error handling.</p>
+
+            <div class="code-block" data-lang="TypeScript">
+// Result Pattern Implementation
+type Result<T, E> = Success<T> | Failure<E>;
+
+class Success<T> {
+    constructor(public value: T) {}
+    isSuccess(): this is Success<T> { return true; }
+    isFailure(): this is Failure<any> { return false; }
+}
+
+class Failure<E> {
+    constructor(public error: E) {}
+    isSuccess(): this is Success<any> { return false; }
+    isFailure(): this is Failure<E> { return true; }
+}
+
+// Usage
+async function validateAndProcessUser(userData: UserData): Promise<Result<User, ValidationError>> {
+    const validationResult = validateUser(userData);
+    
+    if (validationResult.isFailure()) {
+        return new Failure(validationResult.error);
+    }
+    
+    const user = await createUser(validationResult.value);
+    return new Success(user);
+}</div>
+
+            <h3>Error Handling Principles</h3>
+            <ul style="font-size: 1.1em; line-height: 1.8;">
+                <li><strong>Use Exceptions for Exceptional Cases:</strong> Not for business logic flow</li>
+                <li><strong>Fail Fast at Boundaries:</strong> Validate inputs early and completely</li>
+                <li><strong>Provide Context:</strong> Error messages should help debugging</li>
+                <li><strong>Don't Return Null:</strong> Use Optional/Maybe types or throw exceptions</li>
+            </ul>
+        </div>
+
+        <!-- Clean Architecture Deep Dive -->
+        <div class="slide" id="slide-7">
+            <h2>Clean Architecture: Beyond MVC</h2>
+            
+            <div class="architecture-diagram">
+                <h3>The Dependency Rule</h3>
+                <div class="layer" style="background: #e74c3c;">Frameworks & Drivers (External)</div>
+                <div class="layer" style="background: #f39c12;">Interface Adapters (Controllers, Gateways)</div>
+                <div class="layer" style="background: #3498db;">Application Business Rules (Use Cases)</div>
+                <div class="layer" style="background: #27ae60;">Enterprise Business Rules (Entities)</div>
+            </div>
+
+            <h3>Key Insights</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Dependency Inversion</h4>
+                    <p>High-level modules should not depend on low-level modules. Both should depend on abstractions.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Boundaries Matter</h4>
+                    <p>Create clear boundaries between layers. Each layer should know nothing about the layers outside it.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Testability by Design</h4>
+                    <p>When business logic is independent of frameworks, testing becomes natural and fast.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-World Architecture Example -->
+        <div class="slide" id="slide-8">
+            <h2>Architecture in Practice: E-commerce System</h2>
+            
+            <div class="code-block" data-lang="TypeScript">
+// Domain Layer (Core Business Logic)
+class Order {
+    constructor(
+        private customerId: CustomerId,
+        private items: OrderItem[],
+        private status: OrderStatus = OrderStatus.Pending
+    ) {}
+
+    calculateTotal(): Money {
+        return this.items.reduce(
+            (total, item) => total.add(item.getSubtotal()),
+            Money.zero()
+        );
+    }
+
+    canBeShipped(): boolean {
+        return this.status === OrderStatus.Confirmed && 
+               this.hasShippableItems();
+    }
+}</div>
+
+            <div class="code-block" data-lang="TypeScript">
+// Application Layer (Use Cases)
+class PlaceOrderUseCase {
+    constructor(
+        private orderRepository: OrderRepository,
+        private paymentService: PaymentService,
+        private inventoryService: InventoryService
+    ) {}
+
+    async execute(command: PlaceOrderCommand): Promise<Result<OrderId, OrderError>> {
+        // 1. Validate inventory
+        const inventoryCheck = await this.inventoryService.checkAvailability(command.items);
+        if (inventoryCheck.isFailure()) {
+            return new Failure(new InsufficientInventoryError());
+        }
+
+        // 2. Create order
+        const order = Order.create(command.customerId, command.items);
+        
+        // 3. Process payment
+        const paymentResult = await this.paymentService.charge(
+            command.paymentMethod, 
+            order.calculateTotal()
+        );
+        
+        if (paymentResult.isFailure()) {
+            return new Failure(new PaymentFailedError());
+        }
+
+        // 4. Save order
+        const savedOrder = await this.orderRepository.save(order);
+        return new Success(savedOrder.id);
+    }
+}</div>
+
+            <div class="key-takeaway">
+                Notice how business logic (Order class) knows nothing about databases, web frameworks, or external services. 
+                This makes it infinitely testable and portable.
+            </div>
+        </div>
+
+        <!-- Code Quality Metrics -->
+        <div class="slide" id="slide-9">
+            <h2>Measuring Clean Code: The Metrics</h2>
+            
+            <div class="metrics-container">
+                <div class="metric-card">
+                    <span class="metric-number">< 10</span>
+                    <p>Cyclomatic Complexity per Function</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-number">< 20</span>
+                    <p>Lines per Function</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-number">< 500</span>
+                    <p>Lines per Class</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-number">> 80%</span>
+                    <p>Test Coverage</p>
+                </div>
+            </div>
+
+            <h3>Beyond Basic Metrics</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Cognitive Complexity</h4>
+                    <p>How hard is it to understand? Nested loops and conditions increase cognitive load exponentially.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Coupling Metrics</h4>
+                    <p>Afferent/Efferent coupling ratios tell you about stability and responsibility distribution.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Code Churn</h4>
+                    <p>Files that change frequently might indicate design problems or unclear requirements.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Strategies -->
+        <div class="slide" id="slide-10">
+            <h2>Testing: The Safety Net of Clean Code</h2>
+            
+            <h3>The Testing Pyramid Evolved</h3>
+            <div class="architecture-diagram">
+                <div class="layer" style="background: #e74c3c;">E2E Tests (Few, Slow, Brittle)</div>
+                <div class="layer" style="background: #f39c12;">Integration Tests (Some, Medium Speed)</div>
+                <div class="layer" style="background: #3498db;">Unit Tests (Many, Fast, Reliable)</div>
+                <div class="layer" style="background: #27ae60;">Static Analysis (Continuous, Instant)</div>
+            </div>
+
+            <h3>Advanced Testing Principles</h3>
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ Testing Implementation Details</h4>
+                    <div class="code-block" data-lang="JavaScript">
+test('UserService calls database.save with correct params', () => {
+    const mockDb = jest.mock();
+    const userService = new UserService(mockDb);
+    
+    userService.createUser('John', 'john@email.com');
+    
+    expect(mockDb.save).toHaveBeenCalledWith({
+        name: 'John',
+        email: 'john@email.com'
+    });
+});</div>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ Testing Behavior & Outcomes</h4>
+                    <div class="code-block" data-lang="JavaScript">
+test('UserService creates user successfully', async () => {
+    const userService = new UserService(inMemoryRepository);
+    
+    const result = await userService.createUser('John', 'john@email.com');
+    
+    expect(result.isSuccess()).toBe(true);
+    expect(result.value.name).toBe('John');
+    expect(result.value.email).toBe('john@email.com');
+    
+    const savedUser = await userService.findByEmail('john@email.com');
+    expect(savedUser).toBeDefined();
+});</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools & Practices -->
+        <div class="slide" id="slide-11">
+            <h2>Tools for Maintaining Excellence</h2>
+            
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3>Static Analysis</h3>
+                    <p>ESLint, SonarQube, CodeClimate</p>
+                    <small>Catch issues before they reach production</small>
+                </div>
+                <div class="tool-card">
+                    <h3>Code Formatters</h3>
+                    <p>Prettier, Black, gofmt</p>
+                    <small>Eliminate style debates, ensure consistency</small>
+                </div>
+                <div class="tool-card">
+                    <h3>Architecture Tests</h3>
+                    <p>ArchUnit, NDepend</p>
+                    <small>Enforce architectural boundaries in code</small>
+                </div>
+                <div class="tool-card">
+                    <h3>Dependency Analysis</h3>
+                    <p>Madge, jdeps, depcheck</p>
+                    <small>Visualize and control dependencies</small>
+                </div>
+                <div class="tool-card">
+                    <h3>Performance Profiling</h3>
+                    <p>Chrome DevTools, Profiler</p>
+                    <small>Identify bottlenecks early</small>
+                </div>
+                <div class="tool-card">
+                    <h3>Documentation</h3>
+                    <p>JSDoc, Sphinx, GitBook</p>
+                    <small>Code should be self-documenting, but context matters</small>
+                </div>
+            </div>
+
+            <h3>Automation is Key</h3>
+            <p style="font-size: 1.2em; line-height: 1.8; margin-top: 30px;">
+                Set up pre-commit hooks, CI/CD pipelines, and automated code reviews. 
+                Make it impossible to merge code that doesn't meet your standards.
+            </p>
+        </div>
+
+        <!-- Refactoring Strategies -->
+        <div class="slide" id="slide-12">
+            <h2>The Art of Refactoring</h2>
+            
+            <h3>The Boy Scout Rule</h3>
+            <div class="key-takeaway">
+                "Always leave the codebase cleaner than you found it."
+                <br><br>
+                Small, continuous improvements compound over time into significant quality gains.
+            </div>
+
+            <h3>Advanced Refactoring Techniques</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Extract Method Object</h4>
+                    <p>When a method has too many parameters, create a class to hold the operation and its data.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Replace Conditional with Polymorphism</h4>
+                    <p>Long if/else chains often indicate missing abstractions. Use strategy pattern or command pattern.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Introduce Parameter Object</h4>
+                    <p>Group related parameters into objects. This often reveals missing domain concepts.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Replace Magic Numbers with Named Constants</h4>
+                    <p>Numbers in code should tell a story. What does 86400 mean? Use SECONDS_PER_DAY instead.</p>
+                </div>
+            </div>
+
+            <h3>When NOT to Refactor</h3>
+            <ul style="font-size: 1.1em; line-height: 1.8; margin-top: 25px;">
+                <li>Code that's about to be deleted or replaced</li>
+                <li>Legacy systems with no test coverage (add tests first)</li>
+                <li>During tight deadlines (plan refactoring sprints)</li>
+                <li>Code that works perfectly and rarely changes</li>
+            </ul>
+        </div>
+
+        <!-- Team Practices -->
+        <div class="slide" id="slide-13">
+            <h2>Building a Culture of Clean Code</h2>
+            
+            <h3>Code Review Excellence</h3>
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ Nitpicky Reviews</h4>
+                    <ul>
+                        <li>"Use const instead of let here"</li>
+                        <li>"Missing semicolon"</li>
+                        <li>"This should be on one line"</li>
+                    </ul>
+                    <p><small>These should be caught by automated tools, not humans</small></p>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ Architectural Reviews</h4>
+                    <ul>
+                        <li>"This violates single responsibility principle"</li>
+                        <li>"Consider using dependency injection here"</li>
+                        <li>"This coupling makes testing difficult"</li>
+                        <li>"Can we extract this business logic?"</li>
+                    </ul>
+                    <p><small>Focus on design, architecture, and maintainability</small></p>
+                </div>
+            </div>
+
+            <h3>Establishing Standards</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Definition of Done</h4>
+                    <p>Include code quality metrics: test coverage, static analysis passing, documentation updated.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Coding Standards Document</h4>
+                    <p>Document your team's architectural decisions and coding conventions. Make them discoverable.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Regular Tech Debt Reviews</h4>
+                    <p>Schedule time to identify and prioritize technical debt. Make it visible to stakeholders.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Pair Programming</h4>
+                    <p>Knowledge sharing and real-time code review. Two minds catching issues before they're committed.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance & Clean Code -->
+        <div class="slide" id="slide-14">
+            <h2>Clean Code ≠ Slow Code</h2>
+            
+            <h3>The Performance Paradox</h3>
+            <p style="font-size: 1.2em; line-height: 1.8; margin-bottom: 30px;">
+                Clean code often performs better because it's easier to profile, optimize, and reason about. 
+                Premature optimization, however, is the root of all evil.
+            </p>
+
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ Premature Optimization</h4>
+                    <div class="code-block" data-lang="JavaScript">
+// Unreadable "optimization"
+function calculateScore(users) {
+    let result = 0;
+    for (let i = 0, len = users.length; i < len; ++i) {
+        const u = users[i];
+        result += u.points * (u.level > 5 ? 1.5 : 1) + 
+                 (u.premium ? 10 : 0);
+    }
+    return result;
+}</div>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ Clear, Then Optimize If Needed</h4>
+                    <div class="code-block" data-lang="JavaScript">
+function calculateTotalScore(users) {
+    return users.reduce((totalScore, user) => {
+        const baseScore = user.points;
+        const levelBonus = user.isExperienced() ? baseScore * 0.5 : 0;
+        const premiumBonus = user.isPremium() ? 10 : 0;
+        
+        return totalScore + baseScore + levelBonus + premiumBonus;
+    }, 0);
+}
+
+// If profiling shows this is a bottleneck, THEN optimize
+// But now you have a clear baseline to measure against</div>
+                </div>
+            </div>
+
+            <h3>Smart Performance Strategies</h3>
+            <ul style="font-size: 1.1em; line-height: 1.8;">
+                <li><strong>Measure First:</strong> Use profilers to identify actual bottlenecks, not assumed ones</li>
+                <li><strong>Optimize Algorithms:</strong> O(n²) to O(n log n) changes beat micro-optimizations</li>
+                <li><strong>Cache Expensive Operations:</strong> But keep caching logic separate from business logic</li>
+                <li><strong>Database Query Optimization:</strong> Often more impactful than code-level optimizations</li>
+            </ul>
+        </div>
+
+        <!-- Legacy Code Strategies -->
+        <div class="slide" id="slide-15">
+            <h2>Working with Legacy Code</h2>
+            
+            <h3>The Strangler Fig Pattern</h3>
+            <div class="architecture-diagram">
+                <h4>Gradual Migration Strategy</h4>
+                <div class="layer" style="background: #e74c3c;">Legacy System (Gradually Shrinking)</div>
+                <div class="layer" style="background: #f39c12;">Facade Layer (Translation & Routing)</div>
+                <div class="layer" style="background: #27ae60;">New Clean System (Growing)</div>
+            </div>
+
+            <h3>Legacy Code Principles</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Add Tests Before Changing</h4>
+                    <p>Characterization tests capture current behavior, giving you confidence to refactor.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Break Dependencies</h4>
+                    <p>Use dependency injection, seams, and adapter patterns to isolate code under test.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Make Small Changes</h4>
+                    <p>Large refactoring of legacy code is risky. Make small, incremental improvements.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Extract and Test</h4>
+                    <p>Extract small pieces of functionality, add comprehensive tests, then refactor safely.</p>
+                </div>
+            </div>
+
+            <div class="code-block" data-lang="Java">
+// Legacy Code: Hard to test, tightly coupled
+public class OrderProcessor {
+    public void processOrder(String orderId) {
+        // Direct database access
+        Connection conn = DriverManager.getConnection("jdbc:...");
+        // ... 50 lines of mixed business logic and infrastructure
+        
+        // Direct email sending
+        EmailService.sendConfirmation(order.getCustomerEmail());
+    }
+}
+
+// Refactored: Testable, single responsibility
+public class OrderProcessor {
+    private final OrderRepository orderRepository;
+    private final NotificationService notificationService;
+    
+    public OrderProcessor(OrderRepository orderRepository, 
+                         NotificationService notificationService) {
+        this.orderRepository = orderRepository;
+        this.notificationService = notificationService;
+    }
+    
+    public void processOrder(OrderId orderId) {
+        Order order = orderRepository.findById(orderId);
+        order.markAsProcessed();
+        orderRepository.save(order);
+        
+        notificationService.sendOrderConfirmation(order);
+    }
+}</div>
+        </div>
+
+        <!-- Microservices & Clean Architecture -->
+        <div class="slide" id="slide-16">
+            <h2>Clean Code in Distributed Systems</h2>
+            
+            <h3>The Distributed Monolith Anti-Pattern</h3>
+            <div class="key-takeaway">
+                Just because services are deployed separately doesn't mean they're well-designed. 
+                Clean architecture principles apply at the service level too.
+            </div>
+
+            <h3>Service Design Principles</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Domain-Driven Boundaries</h4>
+                    <p>Services should align with business domains, not technical layers. Order Service, not Database Service.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>API-First Design</h4>
+                    <p>Design your service contracts first. This forces you to think about clean interfaces.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Autonomous Services</h4>
+                    <p>Each service should be independently deployable and testable. Minimize shared dependencies.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Graceful Degradation</h4>
+                    <p>Services should handle partner service failures gracefully. Circuit breakers, fallbacks, timeouts.</p>
+                </div>
+            </div>
+
+            <div class="code-block" data-lang="TypeScript">
+// Clean Service Interface Design
+interface PaymentService {
+    processPayment(request: PaymentRequest): Promise<Result<PaymentResult, PaymentError>>;
+    refundPayment(paymentId: PaymentId): Promise<Result<RefundResult, RefundError>>;
+    getPaymentStatus(paymentId: PaymentId): Promise<PaymentStatus>;
+}
+
+// Implementation handles all the complexity
+class StripePaymentService implements PaymentService {
+    async processPayment(request: PaymentRequest): Promise<Result<PaymentResult, PaymentError>> {
+        try {
+            const stripeResult = await this.stripeClient.charges.create({
+                amount: request.amount.toCents(),
+                currency: request.currency.code,
+                source: request.paymentMethod.token
+            });
+            
+            return new Success(PaymentResult.fromStripeCharge(stripeResult));
+        } catch (error) {
+            return new Failure(PaymentError.fromStripeError(error));
+        }
+    }
+}</div>
+        </div>
+
+        <!-- Monitoring & Observability -->
+        <div class="slide" id="slide-17">
+            <h2>Clean Code Meets Observability</h2>
+            
+            <h3>Structured Logging</h3>
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ Unstructured Logging</h4>
+                    <div class="code-block" data-lang="JavaScript">
+console.log('User ' + userId + ' failed to login at ' + new Date());
+console.log('Error was: ' + error.message);</div>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ Structured, Searchable Logging</h4>
+                    <div class="code-block" data-lang="JavaScript">
+logger.warn('User login failed', {
+    userId: userId,
+    timestamp: Date.now(),
+    errorCode: error.code,
+    errorMessage: error.message,
+    ipAddress: request.ip,
+    userAgent: request.headers['user-agent']
+});</div>
+                </div>
+            </div>
+
+            <h3>Observability as a First-Class Concern</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Correlation IDs</h4>
+                    <p>Track requests across service boundaries. Every log entry should include correlation ID.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Health Checks</h4>
+                    <p>Expose health endpoints that check dependencies. Make deployment decisions based on real health.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Metrics That Matter</h4>
+                    <p>Business metrics, not just technical ones. Track user actions, not just server stats.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Distributed Tracing</h4>
+                    <p>Understand request flow across services. Identify bottlenecks and failure points.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security & Clean Code -->
+        <div class="slide" id="slide-18">
+            <h2>Security Through Clean Design</h2>
+            
+            <h3>Security as Architecture</h3>
+            <p style="font-size: 1.2em; line-height: 1.8; margin-bottom: 30px;">
+                Clean code principles naturally lead to more secure code. 
+                Single responsibility and clear boundaries make security reviews easier.
+            </p>
+
+            <h3>Secure Coding Principles</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Input Validation at Boundaries</h4>
+                    <p>Validate and sanitize all inputs at system boundaries. Trust nothing from external sources.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Principle of Least Privilege</h4>
+                    <p>Code should have minimum necessary permissions. Database connections, file access, network calls.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Fail Securely</h4>
+                    <p>When systems fail, they should fail to a secure state. Don't expose sensitive information in errors.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Defense in Depth</h4>
+                    <p>Multiple layers of security controls. If one fails, others should still protect the system.</p>
+                </div>
+            </div>
+
+            <div class="code-block" data-lang="TypeScript">
+// Secure by Design
+class UserService {
+    private readonly passwordHasher: PasswordHasher;
+    private readonly auditLogger: AuditLogger;
+    
+    async authenticateUser(credentials: LoginCredentials): Promise<Result<User, AuthError>> {
+        // Input validation at boundary
+        const validationResult = this.validateCredentials(credentials);
+        if (validationResult.isFailure()) {
+            this.auditLogger.logFailedLogin(credentials.username, 'Invalid format');
+            return new Failure(new InvalidCredentialsError());
+        }
+        
+        const user = await this.userRepository.findByUsername(credentials.username);
+        if (!user) {
+            // Constant-time response to prevent username enumeration
+            await this.passwordHasher.hash('dummy-password');
+            this.auditLogger.logFailedLogin(credentials.username, 'User not found');
+            return new Failure(new InvalidCredentialsError());
+        }
+        
+        const isValidPassword = await this.passwordHasher.verify(
+            credentials.password, 
+            user.hashedPassword
+        );
+        
+        if (!isValidPassword) {
+            this.auditLogger.logFailedLogin(credentials.username, 'Invalid password');
+            return new Failure(new InvalidCredentialsError());
+        }
+        
+        this.auditLogger.logSuccessfulLogin(user.id);
+        return new Success(user);
+    }
+}</div>
+        </div>
+
+        <!-- Documentation & Clean Code -->
+        <div class="slide" id="slide-19">
+            <h2>Documentation: When Code Isn't Enough</h2>
+            
+            <h3>The Documentation Hierarchy</h3>
+            <div class="architecture-diagram">
+                <div class="layer" style="background: #27ae60;">Self-Documenting Code (Names, Structure)</div>
+                <div class="layer" style="background: #3498db;">Code Comments (Why, Not What)</div>
+                <div class="layer" style="background: #f39c12;">API Documentation (Contracts, Examples)</div>
+                <div class="layer" style="background: #e74c3c;">Architecture Documentation (Decisions, Context)</div>
+            </div>
+
+            <h3>When to Comment</h3>
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ Obvious Comments</h4>
+                    <div class="code-block" data-lang="Java">
+// Increment i by 1
+i++;
+
+// Check if user is null
+if (user == null) {
+    return false;
+}</div>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ Intent and Context Comments</h4>
+                    <div class="code-block" data-lang="Java">
+// Using exponential backoff to handle rate limiting
+// from the payment gateway (max 100 requests/minute)
+Thread.sleep(Math.pow(2, attemptCount) * 1000);
+
+// The seemingly complex regex handles edge cases found
+// in production: unicode characters, multiple spaces,
+// and trailing punctuation. See issue #1234 for examples.
+String normalized = input.replaceAll(NORMALIZATION_REGEX, " ");</div>
+                </div>
+            </div>
+
+            <h3>Architecture Decision Records (ADRs)</h3>
+            <div class="code-block" data-lang="Markdown">
+# ADR-001: Use Result Pattern for Error Handling
+
+## Status
+Accepted
+
+## Context
+Our current exception-based error handling makes it difficult to distinguish 
+between expected business failures and unexpected technical failures.
+
+## Decision
+We will use the Result<T, E> pattern for operations that can fail in expected ways.
+
+## Consequences
+- Positive: Explicit error handling, better API contracts
+- Positive: Easier to test error scenarios
+- Negative: More verbose than exceptions
+- Negative: Learning curve for team members</div>
+        </div>
+
+        <!-- Future-Proofing Code -->
+        <div class="slide" id="slide-20">
+            <h2>Writing Code for the Future</h2>
+            
+            <h3>Designing for Change</h3>
+            <div class="key-takeaway">
+                The only constant in software is change. 
+                Design your code to be flexible in the right places and rigid in the right places.
+            </div>
+
+            <h3>Extensibility Patterns</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Open/Closed Principle</h4>
+                    <p>Open for extension, closed for modification. Use interfaces and composition to add new behavior.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Configuration over Code</h4>
+                    <p>Make behavior configurable where appropriate. But don't make everything configurable.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Plugin Architecture</h4>
+                    <p>Design extension points where you anticipate future needs. Event systems, hooks, registries.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Version Your APIs</h4>
+                    <p>Plan for API evolution from day one. Breaking changes should be opt-in, not forced.</p>
+                </div>
+            </div>
+
+            <div class="code-block" data-lang="TypeScript">
+// Extensible Design Example
+interface NotificationChannel {
+    send(message: NotificationMessage): Promise<Result<void, NotificationError>>;
+    supports(type: NotificationType): boolean;
+}
+
+class NotificationService {
+    private channels = new Map<string, NotificationChannel>();
+    
+    registerChannel(name: string, channel: NotificationChannel): void {
+        this.channels.set(name, channel);
+    }
+    
+    async sendNotification(message: NotificationMessage): Promise<void> {
+        const availableChannels = Array.from(this.channels.values())
+            .filter(channel => channel.supports(message.type));
+            
+        if (availableChannels.length === 0) {
+            throw new Error(`No channel supports ${message.type}`);
+        }
+        
+        // Try channels in priority order
+        for (const channel of availableChannels) {
+            const result = await channel.send(message);
+            if (result.isSuccess()) {
+                return;
+            }
+        }
+        
+        throw new Error('All notification channels failed');
+    }
+}
+
+// Adding new channels is easy - no modification of existing code
+notificationService.registerChannel('slack', new SlackChannel(config));
+notificationService.registerChannel('discord', new DiscordChannel(config));</div>
+        </div>
+
+        <!-- Measuring Success -->
+        <div class="slide" id="slide-21">
+            <h2>Measuring Clean Code Success</h2>
+            
+            <h3>Leading vs Lagging Indicators</h3>
+            <div class="metrics-container">
+                <div class="metric-card">
+                    <h4>Leading Indicators</h4>
+                    <ul style="text-align: left; font-size: 0.9em;">
+                        <li>Code review velocity</li>
+                        <li>Test coverage trends</li>
+                        <li>Static analysis scores</li>
+                        <li>Refactoring frequency</li>
+                    </ul>
+                </div>
+                <div class="metric-card">
+                    <h4>Lagging Indicators</h4>
+                    <ul style="text-align: left; font-size: 0.9em;">
+                        <li>Bug rates in production</li>
+                        <li>Time to implement features</li>
+                        <li>Developer satisfaction</li>
+                        <li>Customer satisfaction</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>The Business Case for Clean Code</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Reduced Technical Debt</h4>
+                    <p>Clean code has lower maintenance costs and fewer surprise bugs that require emergency fixes.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Faster Feature Delivery</h4>
+                    <p>Well-architected systems make adding new features predictable and low-risk.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Developer Retention</h4>
+                    <p>Developers prefer working on clean codebases. High-quality code attracts high-quality developers.</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Reduced Onboarding Time</h4>
+                    <p>New team members can understand and contribute to clean codebases much faster.</p>
+                </div>
+            </div>
+
+            <div class="key-takeaway">
+                Track both technical metrics (complexity, coverage) and business metrics (velocity, quality). 
+                The goal is sustainable software development, not perfect code.
+            </div>
+        </div>
+
+        <!-- Common Pitfalls -->
+        <div class="slide" id="slide-22">
+            <h2>Common Clean Code Pitfalls</h2>
+            
+            <h3>When Clean Code Goes Wrong</h3>
+            
+            <div class="principles-grid">
+                <div class="principle-card" style="border-left-color: #e74c3c;">
+                    <h4>Over-Engineering</h4>
+                    <p>Creating abstractions for problems you don't have yet. YAGNI (You Aren't Gonna Need It) is important.</p>
+                </div>
+                <div class="principle-card" style="border-left-color: #e74c3c;">
+                    <h4>Cargo Cult Programming</h4>
+                    <p>Blindly following patterns without understanding why. Design patterns are tools, not goals.</p>
+                </div>
+                <div class="principle-card" style="border-left-color: #e74c3c;">
+                    <h4>Analysis Paralysis</h4>
+                    <p>Spending too much time designing the "perfect" architecture. Sometimes good enough is good enough.</p>
+                </div>
+                <div class="principle-card" style="border-left-color: #e74c3c;">
+                    <h4>Premature Abstraction</h4>
+                    <p>Don't abstract until you have at least 3 examples of the pattern. Duplication is better than bad abstraction.</p>
+                </div>
+            </div>
+
+            <h3>Finding the Balance</h3>
+            <div class="good-bad-container">
+                <div class="bad-example">
+                    <h4>❌ Over-Engineered</h4>
+                    <div class="code-block" data-lang="Java">
+// For a simple calculator app
+interface CalculationStrategy {
+    BigDecimal execute(BigDecimal a, BigDecimal b);
+}
+
+class CalculationFactory {
+    private Map<OperationType, CalculationStrategy> strategies;
+    
+    public CalculationStrategy getStrategy(OperationType type) {
+        return strategies.get(type);
+    }
+}
+
+class AdditionCalculationStrategy implements CalculationStrategy {
+    public BigDecimal execute(BigDecimal a, BigDecimal b) {
+        return a.add(b);
+    }
+}</div>
+                </div>
+                
+                <div class="good-example">
+                    <h4>✅ Appropriately Simple</h4>
+                    <div class="code-block" data-lang="Java">
+// For a simple calculator app
+public class Calculator {
+    public double add(double a, double b) {
+        return a + b;
+    }
+    
+    public double subtract(double a, double b) {
+        return a - b;
+    }
+    
+    // Add complexity when you actually need it
+}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Items -->
+        <div class="slide" id="slide-23">
+            <h2>Your Next Steps: Building Excellence</h2>
+            
+            <h3>Week 1: Foundation</h3>
+            <ul style="font-size: 1.1em; line-height: 1.8;">
+                <li>Set up automated code formatting and linting in your project</li>
+                <li>Add pre-commit hooks to enforce quality gates</li>
+                <li>Identify the 3 most complex functions in your codebase</li>
+                <li>Write characterization tests for one piece of legacy code</li>
+            </ul>
+
+            <h3>Week 2-4: Implementation</h3>
+            <ul style="font-size: 1.1em; line-height: 1.8;">
+                <li>Refactor one complex function using the techniques discussed</li>
+                <li>Implement the Result pattern for error handling in one module</li>
+                <li>Add structured logging to your most critical business operations</li>
+                <li>Create your first Architecture Decision Record (ADR)</li>
+            </ul>
+
+            <h3>Month 2-3: Culture</h3>
+            <ul style="font-size: 1.1em; line-height: 1.8;">
+                <li>Establish code review guidelines focused on architecture</li>
+                <li>Schedule regular technical debt review sessions</li>
+                <li>Introduce metrics tracking (cyclomatic complexity, test coverage)</li>
+                <li>Run a team workshop on clean code principles</li>
+            </ul>
+
+            <div class="key-takeaway">
+                Remember: Perfect is the enemy of good. 
+                Start with small improvements and build momentum. 
+                Clean code is a journey, not a destination.
+            </div>
+        </div>
+
+        <!-- Resources & Learning -->
+        <div class="slide" id="slide-24">
+            <h2>Continuing Your Journey</h2>
+            
+            <h3>Essential Reading</h3>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h4>Clean Code</h4>
+                    <p>Robert C. Martin</p>
+                    <small>The foundational text on writing readable code</small>
+                </div>
+                <div class="tool-card">
+                    <h4>Clean Architecture</h4>
+                    <p>Robert C. Martin</p>
+                    <small>System design and architectural principles</small>
+                </div>
+                <div class="tool-card">
+                    <h4>Refactoring</h4>
+                    <p>Martin Fowler</p>
+                    <small>Systematic approach to improving code structure</small>
+                </div>
+                <div class="tool-card">
+                    <h4>Working Effectively with Legacy Code</h4>
+                    <p>Michael Feathers</p>
+                    <small>Strategies for improving existing codebases</small>
+                </div>
+                <div class="tool-card">
+                    <h4>Domain-Driven Design</h4>
+                    <p>Eric Evans</p>
+                    <small>Aligning code with business domains</small>
+                </div>
+                <div class="tool-card">
+                    <h4>Patterns of Enterprise Application Architecture</h4>
+                    <p>Martin Fowler</p>
+                    <small>Architectural patterns for complex systems</small>
+                </div>
+            </div>
+
+            <h3>Online Communities & Resources</h3>
+            <ul style="font-size: 1.1em; line-height: 1.8; columns: 2; column-gap: 40px;">
+                <li>Clean Code subreddit (/r/cleancode)</li>
+                <li>Software Engineering Stack Exchange</li>
+                <li>Martin Fowler's blog (martinfowler.com)</li>
+                <li>The Clean Code Blog (blog.cleancoder.com)</li>
+                <li>Thoughtworks Technology Radar</li>
+                <li>InfoQ Software Architecture content</li>
+                <li>Kent Beck's blog and Twitter</li>
+                <li>Uncle Bob's Clean Coders videos</li>
+            </ul>
+        </div>
+
+        <!-- Closing -->
+        <div class="slide" id="slide-25">
+            <h1 style="font-size: 2.5em;">The Craft Continues</h1>
+            
+            <div style="text-align: center; margin: 50px 0;">
+                <p style="font-size: 1.4em; line-height: 1.8; margin-bottom: 30px;">
+                    "The ratio of time spent reading versus writing is well over 10 to 1. 
+                    We are constantly reading old code as part of the effort to write new code."
+                </p>
+                <p style="font-size: 1.1em; color: #7f8c8d; font-style: italic;">— Robert C. Martin</p>
+            </div>
+
+            <div class="key-takeaway">
+                Clean code is not about perfection—it's about respect. 
+                Respect for your future self, your teammates, and the users who depend on your software.
+                <br><br>
+                Every line of code is a choice. Choose wisely.
+            </div>
+
+            <div class="speaker-info" style="margin-top: 50px;">
+                <h3>Thank You</h3>
+                <p>Questions & Discussion</p>
+                <p>Jawad Srour • Senior Software Engineer</p>
+                <p style="font-size: 0.9em; opacity: 0.8;">Let's build software that we're proud to maintain</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
